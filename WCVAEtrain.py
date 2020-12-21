@@ -16,48 +16,48 @@ import torch.nn.functional as F
 from model import VAEGAN
 from torch.optim import RMSprop, Adam, SGD
 from torch.optim.lr_scheduler import ExponentialLR, MultiStepLR
+
 # sklearn package for stratified sample
 from sklearn.model_selection import StratifiedShuffleSplit
 import random
 import matplotlib
 import matplotlib.pyplot as plt
 
+class opt():
+    n_epochs = 200
+    batch_size = 100
+    lr = 3e-4
+    b1 = 0.5
+    b2 = 0.999
+    n_cpu = 4
+    latent_dim = 100
+    n_classes = 10
+    img_size = 32
+    channels = 1
+    sample_interval = 500
+    lambda_ALM = 1
+    mu_ALM = 1.2
+    rho_ALM = 1.5
+    z_size = 128
+    decay_lr = 0.75
+    lambda_mse = 1e-3
+    def __init__(self):
+        print("opt setted")
+
 if __name__ == "__main__":
     matplotlib.use('Agg')
     os.makedirs("images", exist_ok=True)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--n_epochs", type=int, default=200, help="number of epochs of training")
-    parser.add_argument("--batch_size", type=int, default=100, help="size of the batches")
-    parser.add_argument("--lr", type=float, default=3e-4, help="adam: learning rate")
-    parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
-    parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-    parser.add_argument("--n_cpu", type=int, default=16, help="number of cpu threads to use during batch generation")
-    parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-    parser.add_argument("--n_classes", type=int, default=10, help="number of classes for dataset")
-    parser.add_argument("--img_size", type=int, default=32, help="size of each image dimension")
-    parser.add_argument("--channels", type=int, default=1, help="number of image channels")
-    parser.add_argument("--sample_interval", type=int, default=500, help="interval between image sampling")
-    parser.add_argument("--lambda_ALM", type=float, default=1, help="lambda in ALM")
-    parser.add_argument("--mu_ALM", type=float, default=1.2, help="mu in ALM")
-    parser.add_argument("--rho_ALM", type=float, default=1.5, help="rho in ALM")
-    parser.add_argument("--z_size", default=128, action="store", type=int, dest="z_size")
-    parser.add_argument("--recon_level", default=3, action="store", type=int, dest="recon_level")
-    parser.add_argument("--decay_lr", default=0.75, action="store", type=float, dest="decay_lr")
-    parser.add_argument("--lambda_mse", default=1e-3, action="store", type=float, dest="lambda_mse")
-
-
-    opt = parser.parse_args()
+    opt = opt()
     print(opt)
     z_size = opt.z_size
-    recon_level = opt.recon_level
+    
     lr=opt.lr
     decay_lr=opt.decay_lr
     lambda_mse = opt.lambda_mse
 
     # margin and equilibirum  均衡
-    margin = 0.35
-    equilibrium = 0.68
+    # margin = 0.35
+    # equilibrium = 0.68
 
     cuda = True if torch.cuda.is_available() else False
     print(torch.cuda.is_available())
@@ -74,45 +74,6 @@ if __name__ == "__main__":
         elif classname.find("BatchNorm2d") != -1:
             torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
             torch.nn.init.constant_(m.bias.data, 0.0)
-
-
-
-    #WCVAE
-    # train encoder and decoder
-
-
-    # class Generator(nn.Module):
-    #     def __init__(self):
-    #         super(Generator, self).__init__()
-
-    #         self.label_emb = nn.Embedding(opt.n_classes, opt.latent_dim)
-
-    #         self.init_size = opt.img_size // 4  # Initial size before upsampling
-    #         self.l1 = nn.Sequential(nn.Linear(opt.latent_dim, 128 * self.init_size ** 2))
-
-    #         self.conv_blocks = nn.Sequential(
-    #             nn.BatchNorm2d(128),
-    #             nn.Upsample(scale_factor=2),
-    #             nn.utils.spectral_norm(nn.Conv2d(128, 128, 3, stride=1, padding=1)),
-
-    #             nn.BatchNorm2d(128, 0.8),
-    #             nn.LeakyReLU(0.2, inplace=True),
-    #             nn.Upsample(scale_factor=2),
-    #             nn.utils.spectral_norm(nn.Conv2d(128, 64, 3, stride=1, padding=1)),
-
-    #             nn.BatchNorm2d(64, 0.8),
-    #             nn.LeakyReLU(0.2, inplace=True),
-    #             nn.utils.spectral_norm(nn.Conv2d(64, opt.channels, 3, stride=1, padding=1)),
-
-    #             nn.Tanh(),
-    #         )
-
-    #     def forward(self, noise, labels):
-    #         input1 = torch.mul(self.label_emb(labels), noise)
-    #         input2 = self.l1(input1)
-    #         input2 = input2.view(input2.shape[0], 128, self.init_size, self.init_size)
-    #         output_imgs = self.conv_blocks(input2)
-    #         return output_imgs
 
 
     class Discriminator(nn.Module):
@@ -225,7 +186,7 @@ if __name__ == "__main__":
 
     # Initialize generator Decoder Encoder and discriminator 
     #generator = Generator()
-    net = VAEGAN(z_size=z_size, recon_level=recon_level)
+    net = VAEGAN(z_size=z_size)
     discriminator = Discriminator()
     classifier1 = Classifier1()
     classifier2 = Classifier2()

@@ -19,6 +19,8 @@ class DecoderBlock(nn.Module):
         # ten = F.relu(ten, True)
         ten = nn.LeakyReLU(ten, inplace=True)
         return ten
+
+        
 class Decoder(nn.Module):
     def __init__(self, z_size, size, num_classes=10):
         super(Decoder, self).__init__()

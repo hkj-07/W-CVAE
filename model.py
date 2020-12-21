@@ -10,7 +10,7 @@ from WCVAEtrain import Discriminator
 
 
 class VAEGAN(nn.Module):
-    def __init__(self, z_size=128, recon_level=3, num_classes=10):
+    def __init__(self, z_size=128, num_classes=10):
         super(VAEGAN, self).__init__()
 
         # latent space size
