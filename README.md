@@ -1,2 +1,2 @@
-# W-CVAE
+# WCVAE
 The code of W-CVAE
