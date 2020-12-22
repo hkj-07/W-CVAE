@@ -1,59 +1,49 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.nn.utils.spectral_norm as spectral_norm
 
 
-class EncoderBlock(nn.Module):
-    def __init__(self, channel_in, channel_out):
-        super(EncoderBlock, self).__init__()
+"""
+编码器
+输入：带标签数据X
+输出：Z分布的均值和方差
+"""
 
-        # convolution layer to halve the dimensions
-
-        self.conv = nn.Conv2d(in_channels=channel_in, 
-        out_channels=channel_out, kernel_size=5, padding=2, stride=2,
-                              bias=False)
-        self.bn = nn.BatchNorm2d(num_features=channel_out, momentum=0.9)
-
-    def forward(self, ten, out=False, t=False):
-        ten = self.conv(ten)
-        ten_out = ten
-        ten = self.bn(ten)
-        # ten = F.relu(ten, False)
-        ten = nn.LeakyReLU(ten, inplace=True)
-
-        # if out=True return intermediate output for reconstruction error
-        if out:
-            return ten, ten_out
-        return ten
 class Encoder(nn.Module):
-    def __init__(self, channel_in=3, z_size=128):
+    def __init__(self, img_size, img_channels, z_size, n_classes):
         super(Encoder, self).__init__()
-        self.size = channel_in
-        layers = []
+        
+        self.img_size = img_size
+        self.embed_label = spectral_norm(nn.Linear(n_classes, img_size*img_size))
 
-        # the first time 3->64, for every other double the channel size
-        for i in range(3):
-            if i == 0:
-                layers.append(EncoderBlock(channel_in=self.size, channel_out=64))
-                self.size = 64
-            else:
-                layers.append(EncoderBlock(channel_in=self.size, channel_out=self.size * 2))
-                self.size *= 2
+        def conv_block(in_channels, out_channels, bn=True):
+            layers = [spectral_norm(nn.Conv2d(in_channels, out_channels, 4, 1))]
+            layers.append(nn.LeakyReLU(0.2, inplace=True))
+            layers.append(nn.Dropout2d(0.25))
+            if bn:
+                layers.append(nn.BatchNorm2d(out_channels, 0.8))
+            return layers
 
-        # final shape B x 256 x 8 x 8
-        self.conv = nn.Sequential(*layers)
-        self.fc = nn.Sequential(nn.Linear(in_features=8 * 8 * self.size, out_features=1024, bias=False),
-                                nn.BatchNorm1d(num_features=1024, momentum=0.9),
-                                nn.ReLU(True))
-        self.l_mu = nn.Linear(in_features=1024, out_features=z_size)
-        self.l_var = nn.Linear(in_features=1024, out_features=z_size)
+        self.model = nn.Sequential(
+            *conv_block(img_channels+1, 32),
+            *conv_block(32, 64),
+            *conv_block(64, 128),
+            *conv_block(128, 256)
+        )
 
-    def forward(self, ten):
-        ten = self.conv(ten)
-        ten = ten.view(len(ten), -1)
-        ten = self.fc(ten)
-        mu = self.l_mu(ten)
-        logvar = self.l_var(ten)
-        return mu, logvar
+        self.fc_mean = spectral_norm(nn.Linear(65536, z_size))
+        self.fc_var = spectral_norm(nn.Linear(65536, z_size))
 
-    def __call__(self, *args, **kwargs):
-        return super(Encoder, self).__call__(*args, **kwargs)
+    def forward(self, img, label):
+        embedded_label = self.embed_label(label)
+        embedded_label = embedded_label.view(-1, self.img_size, self.img_size).unsqueeze(1)
+        # 使得图片和标签在一起构成一个img_channels+1通道的图片
+        conv_input = torch.cat([img, embedded_label], dim=1)
+        # 得到一个16X16X256的张量
+        conv_output = self.model(conv_input)
+        # 将其打平
+        conv_output = conv_output.view(conv_output.shape[0], -1)
+        z_mean = self.fc_mean(conv_output)
+        z_var = self.fc_var(conv_output)
+        return z_mean, z_var

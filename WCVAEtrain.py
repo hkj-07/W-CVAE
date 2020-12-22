@@ -30,15 +30,14 @@ class opt():
     b1 = 0.5
     b2 = 0.999
     n_cpu = 4
-    latent_dim = 100
     n_classes = 10
-    img_size = 32
-    channels = 1
+    img_size = 28
+    img_channels = 1
+    z_size = 64
     sample_interval = 500
     lambda_ALM = 1
     mu_ALM = 1.2
     rho_ALM = 1.5
-    z_size = 128
     decay_lr = 0.75
     lambda_mse = 1e-3
     def __init__(self):

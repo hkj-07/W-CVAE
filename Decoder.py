@@ -1,11 +1,14 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+"""
+解码器
+输入：Z
+输出：
+"""
 
-
-
-class DecoderBlock(nn.Module):
-    def __init__(self, channel_in, channel_out):
+class Decoder(nn.Module):
+    def __init__(self, img_size, img_channels, z_size):
         super(DecoderBlock, self).__init__()
 
         # transpose convolution to double the dimensions
