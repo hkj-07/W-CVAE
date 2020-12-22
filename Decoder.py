@@ -8,7 +8,6 @@ import torch.nn.utils.spectral_norm as spectral_norm
 输入：Z和标签
 输出：对应类别的x
 """
-
         
 class Decoder(nn.Module):
     def __init__(self, img_size, img_channels, z_size, n_classes):
@@ -20,6 +19,7 @@ class Decoder(nn.Module):
         def conv_block(in_channels, out_channels, bn=True, up=True):
             layers = []
             if up:
+                # 每次上采样，图像边长翻倍 7 14 28 只能翻倍两次
                 layers.append(nn.Upsample(scale_factor=2))
             layers.append(spectral_norm(nn.Conv2d(in_channels, out_channels, 3, stride=1, padding=1)))
             layers.append(nn.LeakyReLU(0.2, inplace=True))
