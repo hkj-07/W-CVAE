@@ -34,14 +34,14 @@ class Discriminator_X(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *fc_block(self.opt.img_size*self.opt.img_size*self.opt.img_channels, 1024),
-            *fc_block(1024, 1024),
-            *fc_block(1024, 1024),
-            *fc_block(1024, 1024)
+            *fc_block(self.opt.img_size*self.opt.img_size*self.opt.img_channels, 512),
+            *fc_block(512, 512),
+            *fc_block(512, 512),
+            # *fc_block(512, 512)
         )
 
         # self.output_layer = spectral_norm(nn.Linear(16*16*1024, 1))
-        self.output_layer = spectral_norm(nn.Linear(1024, 1))
+        self.output_layer = spectral_norm(nn.Linear(512, 1))
 
     def forward(self, img):
         # conv_output = self.model(img)

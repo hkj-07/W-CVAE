@@ -201,17 +201,6 @@ if __name__ == '__main__':
             discriminator_z_loss.backward()
 
             optimizer_discriminator_z.step()
-            
-            """
-            训练encoder
-            """
-            optimizer_encoder.zero_grad()
-            
-            validity_z = discriminator_z(z.detach())
-            encoder_loss = -torch.mean(validity_z)
-            encoder_loss.backward()
-            
-            optimizer_encoder.step()
 
             """
             训练discriminator for x
@@ -237,6 +226,21 @@ if __name__ == '__main__':
             decoder_loss.backward()
 
             optimizer_decoder.step()
+
+            """
+            训练encoder
+            """
+            optimizer_encoder.zero_grad()
+            
+            z_mean, z_var = encoder(labeled_imgs, labels)
+            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+            z = torch.add(torch.mul(z, z_var), z_mean)
+            validity_z = discriminator_z(z)
+            generated_imgs = decoder(z, labels)
+            encoder_loss = -torch.mean(validity_z) + F.mse_loss(generated_imgs, labeled_imgs)
+            encoder_loss.backward()
+            
+            optimizer_encoder.step()
 
             """
             训练classifier
