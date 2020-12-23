@@ -17,7 +17,6 @@ class Discriminator_Z(nn.Module):
 
         def fc_block(in_feat, out_feat):
             layers = [spectral_norm(nn.Linear(in_feat, out_feat))]
-            layers.append(nn.BatchNorm1d(out_feat, 0.8))
             layers.append(nn.LeakyReLU(0.2, inplace=True))
             return layers
 

@@ -15,25 +15,38 @@ class Discriminator_X(nn.Module):
         super(Discriminator_X, self).__init__()
         self.opt = Opt()
 
-        def conv_block(in_channels, out_channels, bn=True):
-            layers = [spectral_norm(nn.Conv2d(in_channels, out_channels, 4, stride=1))]
-            if bn:
-                layers.append(nn.BatchNorm2d(out_channels, 0.8))
+        # def conv_block(in_channels, out_channels):
+        #     layers = [spectral_norm(nn.Conv2d(in_channels, out_channels, 4, stride=1))]
+        #     layers.append(nn.LeakyReLU(0.2, inplace=True))
+        #     layers.append(nn.Dropout2d(0.25))
+        #     return layers
+
+        # self.model = nn.Sequential(
+        #     *conv_block(self.opt.img_channels, 128),
+        #     *conv_block(128, 256),
+        #     *conv_block(256, 512),
+        #     *conv_block(512, 1024)
+        # )
+
+        def fc_block(in_feat, out_feat):
+            layers = [spectral_norm(nn.Linear(in_feat, out_feat))]
             layers.append(nn.LeakyReLU(0.2, inplace=True))
-            layers.append(nn.Dropout2d(0.25))
             return layers
 
         self.model = nn.Sequential(
-            *conv_block(self.opt.img_channels, 128),
-            *conv_block(128, 256),
-            *conv_block(256, 512),
-            *conv_block(512, 1024)
+            *fc_block(self.opt.img_size*self.opt.img_size*self.opt.img_channels, 1024),
+            *fc_block(1024, 1024),
+            *fc_block(1024, 1024),
+            *fc_block(1024, 1024)
         )
 
-        self.output_layer = spectral_norm(nn.Linear(16*16*1024, 1))
+        # self.output_layer = spectral_norm(nn.Linear(16*16*1024, 1))
+        self.output_layer = spectral_norm(nn.Linear(1024, 1))
 
     def forward(self, img):
-        conv_output = self.model(img)
-        conv_output = conv_output.view(conv_output.shape[0], -1)
-        validity_x = self.output_layer(conv_output)
+        # conv_output = self.model(img)
+        # conv_output = conv_output.view(conv_output.shape[0], -1)
+        # validity_x = self.output_layer(conv_output)
+        img = img.view(img.shape[0], -1)
+        validity_x = self.model(img)
         return validity_x

@@ -233,7 +233,7 @@ if __name__ == '__main__':
 
             generated_imgs = decoder(z.detach(), labels)
             validity_generated_imgs = discriminator_x(generated_imgs)
-            decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - opt.lambda_ALM * torch.mean(validity_generated_imgs)
+            decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             decoder_loss.backward()
 
             optimizer_decoder.step()
@@ -258,12 +258,12 @@ if __name__ == '__main__':
             
             batches_done = epoch * len(all_dataloader) + i
 
-            lossMat[0].append(batches_done)
-            lossMat[1].append(encoder_loss.item())
-            lossMat[2].append(decoder_loss.item())
-            lossMat[3].append(discriminator_z_loss.item())
-            lossMat[4].append(discriminator_x_loss.item())
-            lossMat[5].append(classifier_loss.item())
+            # lossMat[0].append(batches_done)
+            # lossMat[1].append(encoder_loss.item())
+            # lossMat[2].append(decoder_loss.item())
+            # lossMat[3].append(discriminator_z_loss.item())
+            # lossMat[4].append(discriminator_x_loss.item())
+            # lossMat[5].append(classifier_loss.item())
 
             if batches_done % opt.sample_interval == 0:
                 sample_image(batches_done=batches_done)
