@@ -27,7 +27,7 @@ class Classifier(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *conv_block(self.opt.img_channels+1, 64),
+            *conv_block(self.opt.img_channels, 64),
             *conv_block(64, 128),
             *conv_block(128, 256),
             *conv_block(256, 512)
@@ -36,7 +36,7 @@ class Classifier(nn.Module):
         self.output_layers = nn.Sequential(spectral_norm(nn.Linear(16*16*512, self.opt.n_classes)), nn.Softmax())
 
     def forward(self, imgs):
-        input1 = self.conv_blocks(imgs)
-        input1 = input1.view(input1.shape[0], -1)
-        output_predict = self.output_layer(input1)
-        return output_predict
+        conv_output = self.model(imgs)
+        conv_output = conv_output.view(conv_output.shape[0], -1)
+        predict = self.output_layers(conv_output)
+        return predict

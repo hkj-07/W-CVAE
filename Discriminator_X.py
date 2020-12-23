@@ -34,5 +34,6 @@ class Discriminator_X(nn.Module):
 
     def forward(self, img):
         conv_output = self.model(img)
+        conv_output = conv_output.view(conv_output.shape[0], -1)
         validity_x = self.output_layer(conv_output)
         return validity_x
