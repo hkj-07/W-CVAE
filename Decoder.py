@@ -14,7 +14,7 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.opt = Opt()
 
-        self.embed_z = spectral_norm(nn.Linear(self.opt.z_size+self.opt.n_classes, 7*7*512))
+        self.embed_z = spectral_norm(nn.Linear(self.opt.z_size+self.opt.n_classes, 7*7*1024))
 
         def conv_block(in_channels, out_channels, bn=True, up=True):
             layers = []
@@ -28,17 +28,17 @@ class Decoder(nn.Module):
             return layers
         
         self.model = nn.Sequential(
+            *conv_block(1024, 512),
             *conv_block(512, 256),
-            *conv_block(256, 128),
-            *conv_block(128, self.opt.img_channels, up=False)
+            *conv_block(256, self.opt.img_channels, up=False)
         )
 
     def forward(self, z, label):
         # 将z和label连起来
         catted_z = torch.cat([z, label], dim=1)
-        # 映射到256*7*7的图片
+        # 映射到512*7*7的图片
         conv_input = self.embed_z(catted_z)
-        conv_input = conv_input.view(-1, 512, 7, 7)
+        conv_input = conv_input.view(-1, 1024, 7, 7)
         # 得到生成样本
         conv_output = self.model(conv_input)
         return conv_output

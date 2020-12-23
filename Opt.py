@@ -1,7 +1,7 @@
 class Opt():
-    n_epochs = 200
+    n_epochs = 500
     batch_size = 100
-    lr = 3e-4
+    lr = 0.0003
     b1 = 0.5
     b2 = 0.999
     n_cpu = 4
@@ -9,7 +9,7 @@ class Opt():
     img_size = 28
     img_channels = 1
     z_size = 64
-    sample_interval = 500
+    sample_interval = 200
     lambda_ALM = 1
     mu_ALM = 1.2
     rho_ALM = 1.5

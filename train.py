@@ -81,7 +81,7 @@ matplotlib.use('Agg')
 # 设置生成图像输出文件夹
 os.makedirs("./images", exist_ok=True)
 # 设置loss曲线图输出文件夹
-os.makedirs("./lossfigures", exist_ok=True)
+# os.makedirs("./lossfigures", exist_ok=True)
 # 设置数据集文件夹
 os.makedirs("./data/mnist", exist_ok=True)
 
@@ -109,14 +109,14 @@ labeled_MNIST = Subset(MNIST, labeled_indices)
 # 设置dataloader
 labeled_dataloader = DataLoader(
     labeled_MNIST,
-    num_workers=8,
+    num_workers=0,
     pin_memory=True,
     batch_size=opt.batch_size,
     shuffle=True
 )
 all_dataloader = DataLoader(
     MNIST,
-    num_workers=8,
+    num_workers=0,
     pin_memory=True,
     batch_size=opt.batch_size,
     shuffle=True
@@ -185,14 +185,15 @@ if __name__ == '__main__':
             imgs = Variable(imgs.type(FloatTensor))
             target = Variable(target.type(LongTensor))
 
+            z_mean, z_var = encoder(labeled_imgs, labels)
+            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+            z = torch.add(torch.mul(z, z_var), z_mean)
+            
             """
             训练discriminator for z
             """
             optimizer_discriminator_z.zero_grad()
-
-            z_mean, z_var = encoder(labeled_imgs, labels)
-            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
+            
             validity_z = discriminator_z(z)
             z_normal = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
             validity_z_normal = discriminator_z(z_normal)
@@ -206,10 +207,7 @@ if __name__ == '__main__':
             """
             optimizer_encoder.zero_grad()
             
-            z_mean, z_var = encoder(labeled_imgs, labels)
-            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
-            validity_z = discriminator_z(z)
+            validity_z = discriminator_z(z.detach())
             encoder_loss = -torch.mean(validity_z)
             encoder_loss.backward()
             
@@ -220,10 +218,7 @@ if __name__ == '__main__':
             """
             optimizer_discriminator_x.zero_grad()
 
-            z_mean, z_var = encoder(labeled_imgs, labels)
-            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
-            generated_imgs = decoder(z, labels)
+            generated_imgs = decoder(z.detach(), labels)
             validity_generated_imgs = discriminator_x(generated_imgs)
             validity_imgs = discriminator_x(imgs)
             discriminator_x_loss = -torch.mean(validity_imgs) + torch.mean(validity_generated_imgs)
@@ -236,10 +231,7 @@ if __name__ == '__main__':
             """
             optimizer_decoder.zero_grad()
 
-            z_mean, z_var = encoder(labeled_imgs, labels)
-            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
-            generated_imgs = decoder(z, labels)
+            generated_imgs = decoder(z.detach(), labels)
             validity_generated_imgs = discriminator_x(generated_imgs)
             decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - opt.lambda_ALM * torch.mean(validity_generated_imgs)
             decoder_loss.backward()
@@ -251,10 +243,7 @@ if __name__ == '__main__':
             """
             optimizer_classifier.zero_grad()
 
-            z_mean, z_var = encoder(labeled_imgs, labels)
-            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
-            generated_imgs = decoder(z, labels)
+            generated_imgs = decoder(z.detach(), labels)
             predicts = classifier(generated_imgs.detach())
             classifier_loss = cross_entropy(predicts, target)
             classifier_loss.backward()
