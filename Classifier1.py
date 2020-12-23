@@ -18,7 +18,11 @@ class Classifier1(nn.Module):
         self.embed_label = spectral_norm(nn.Linear(self.opt.n_classes, self.opt.img_size*self.opt.img_size))
 
         def conv_block(in_channels, out_channels, bn=True):
-            layers = [spectral_norm(nn.Conv2d(in_channels, out_channels, 4, 1))]
+            layers = [spectral_norm(nn.Conv2d(in_channels, out_channels, 4, stride=1))]
+            if bn:
+                layers.append(nn.BatchNorm2d(out_channels, 0.8))
+            layers.append(nn.LeakyReLU(0.2, inplace=True))
+            layers.append(spectral_norm(nn.Conv2d(out_channels, out_channels, 3, stride=1, padding=1)))
             if bn:
                 layers.append(nn.BatchNorm2d(out_channels, 0.8))
             layers.append(nn.LeakyReLU(0.2, inplace=True))
