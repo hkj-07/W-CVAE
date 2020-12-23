@@ -32,5 +32,5 @@ class Discriminator_Z(nn.Module):
 
     def forward(self, z):
         fc_output = self.model(z)
-        vadility_z = self.output_layer(fc_output)
-        return vadility_z
+        validity_z = self.output_layer(fc_output)
+        return validity_z

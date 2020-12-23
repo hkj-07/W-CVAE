@@ -34,5 +34,5 @@ class Discriminator_X(nn.Module):
 
     def forward(self, img):
         conv_output = self.model(img)
-        vadility_x = self.output_layer(conv_output)
-        return vadility_x
+        validity_x = self.output_layer(conv_output)
+        return validity_x
