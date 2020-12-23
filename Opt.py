@@ -1,4 +1,4 @@
-class opt():
+class Opt():
     n_epochs = 200
     batch_size = 100
     lr = 3e-4
@@ -15,5 +15,5 @@ class opt():
     rho_ALM = 1.5
     decay_lr = 0.75
     lambda_mse = 1e-3
-    def __init__(self):
-        print("opt setted")
+    # def __init__(self):
+    #     print("opt setted")
