@@ -14,6 +14,8 @@ import torch
 import torch.autograd as autograd
 import torch.nn.functional as F
 from model import VAEGAN
+from Discriminator import Discriminator
+from Classifier1 import Classifier1
 from torch.optim import RMSprop, Adam, SGD
 from torch.optim.lr_scheduler import ExponentialLR, MultiStepLR
 
@@ -23,25 +25,10 @@ import random
 import matplotlib
 import matplotlib.pyplot as plt
 
-class opt():
-    n_epochs = 200
-    batch_size = 100
-    lr = 3e-4
-    b1 = 0.5
-    b2 = 0.999
-    n_cpu = 4
-    n_classes = 10
-    img_size = 28
-    img_channels = 1
-    z_size = 64
-    sample_interval = 500
-    lambda_ALM = 1
-    mu_ALM = 1.2
-    rho_ALM = 1.5
-    decay_lr = 0.75
-    lambda_mse = 1e-3
-    def __init__(self):
-        print("opt setted")
+"""
+导入初始化参数
+"""
+from Opt import opt
 
 if __name__ == "__main__":
     matplotlib.use('Agg')
@@ -74,111 +61,6 @@ if __name__ == "__main__":
             torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
             torch.nn.init.constant_(m.bias.data, 0.0)
 
-
-    class Discriminator(nn.Module):
-        def __init__(self):
-            super(Discriminator, self).__init__()
-
-            def discriminator_block(in_filters, out_filters, bn=True):
-                """Returns layers of each discriminator block"""
-                block = [nn.utils.spectral_norm(nn.Conv2d(in_filters, out_filters, 3, 2, 1)), 
-                nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.2)]
-                if bn:
-                    block.append(nn.BatchNorm2d(out_filters, 0.8))
-                return block
-
-            self.conv_blocks = nn.Sequential(
-                *discriminator_block(opt.channels, 16, bn=False),
-                *discriminator_block(16, 32),
-                *discriminator_block(32, 64),
-                *discriminator_block(64, 128),
-            )
-
-            # The height and width of downsampled image
-            ds_size = opt.img_size // 2 ** 4
-
-            # Output layers
-            self.output_layer = nn.Sequential(nn.utils.spectral_norm(nn.Linear(128 * ds_size ** 2, 1)))
-
-        def forward(self, img,other_ten,mode='REC'):
-            if mode == 'REC':
-                for i, layer in enumerate(self.conv):
-                    # take 9th layer as one of the outputs
-                    ten, layer_ten = layer(ten, True)
-                    # fetch the layer representations just for the original & reconstructed,
-                    # flatten, because it is multidimensional
-                    layer_ten = layer_ten.view(len(layer_ten), -1)
-                    return layer_ten
-                    
-            else:
-                input1 = self.conv_blocks(img)
-                input1 = input1.view(input1.shape[0], -1)
-                output_validity = self.output_layer(input1)
-                return output_validity
-
-    class Classifier1(nn.Module):
-        def __init__(self):
-            super(Classifier1, self).__init__()
-
-            self.label_emb = nn.Embedding(opt.n_classes, (opt.img_size ** 2) * opt.channels)
-
-            def Classifier1_block(in_filters, out_filters, bn=True):
-                
-                block = [nn.utils.spectral_norm(nn.Conv2d(in_filters, out_filters, 3, 2, 1)), nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.2)]
-                if bn:
-                    block.append(nn.BatchNorm2d(out_filters, 0.8))
-                return block
-
-            self.conv_blocks = nn.Sequential(
-                *Classifier1_block(opt.channels, 16, bn=False),
-                *Classifier1_block(16, 32),
-                *Classifier1_block(32, 64),
-                *Classifier1_block(64, 128)
-            )
-
-            # The height and width of downsampled image
-            ds_size = opt.img_size // 2 ** 4
-
-            # Output layers
-            self.output_layer = nn.Sequential(nn.utils.spectral_norm(nn.Linear(128 * ds_size ** 2, 1)))
-
-        def forward(self, imgs, labels):
-            input1 = self.label_emb(labels)
-            input1 = input1.view(input1.shape[0], opt.channels, opt.img_size, opt.img_size)
-            input2 = torch.mul(imgs, input1)
-            input3 = self.conv_blocks(input2)
-            input3 = input3.view(input3.shape[0], -1)
-            output_validity = self.output_layer(input3)
-            return output_validity
-
-    class Classifier2(nn.Module):
-        def __init__(self):
-            super(Classifier2, self).__init__()
-
-            def Classifier2_block(in_filters, out_filters, bn=True):
-                block = [nn.Conv2d(in_filters, out_filters, 3, 2, 1), nn.LeakyReLU(0.2, inplace=True), nn.Dropout2d(0.2)]
-                if bn:
-                    block.append(nn.BatchNorm2d(out_filters, 0.8))
-                return block
-
-            self.conv_blocks = nn.Sequential(
-                *Classifier2_block(opt.channels, 16, bn=False),
-                *Classifier2_block(16, 32),
-                *Classifier2_block(32, 64),
-                *Classifier2_block(64, 128)
-            )
-
-            # The height and width of downsampled image
-            ds_size = opt.img_size // 2 ** 4
-
-            # Output layers
-            self.output_layer = nn.Sequential(nn.Linear(128 * ds_size ** 2, opt.n_classes), nn.Softmax(dim=1))
-
-        def forward(self, imgs):
-            input1 = self.conv_blocks(imgs)
-            input1 = input1.view(input1.shape[0], -1)
-            output_predict = self.output_layer(input1)
-            return output_predict
 
     # Initialize CrossEntropyLoss
     cross_entropy_loss = torch.nn.CrossEntropyLoss()
