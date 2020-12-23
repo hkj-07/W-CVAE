@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.nn.utils.spectral_norm as spectral_norm
 from Opt import Opt
 
@@ -12,7 +11,7 @@ from Opt import Opt
 
 class Classifier(nn.Module):
     def __init__(self):
-        super(Classifier2, self).__init__()
+        super(Classifier, self).__init__()
         self.opt = Opt()
 
         def conv_block(in_channels, out_channels, bn=True):
@@ -34,7 +33,7 @@ class Classifier(nn.Module):
             *conv_block(256, 512)
         )
 
-        self.output_layers = [spectral_norm(nn.Linear(16*16*512, self.opt.n_classes)), nn.]
+        self.output_layers = nn.Sequential(spectral_norm(nn.Linear(16*16*512, self.opt.n_classes)), nn.Softmax())
 
     def forward(self, imgs):
         input1 = self.conv_blocks(imgs)
