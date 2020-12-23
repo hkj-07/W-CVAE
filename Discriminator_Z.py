@@ -28,7 +28,7 @@ class Discriminator_Z(nn.Module):
             *fc_block(512, 512)
         )
 
-        self.output_layer = nn.Linear(512, 1)
+        self.output_layer = spectral_norm(nn.Linear(512, 1))
 
     def forward(self, z):
         fc_output = self.model(z)
