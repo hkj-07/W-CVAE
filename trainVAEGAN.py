@@ -349,11 +349,11 @@ if __name__ == '__main__':
 
             # 控制台输出loss
 
-            if (i + 1) % 300 == 0:
-                print(
+            
+            print(
                 "[Epoch %d/%d] [Batch %d/%d] [decoder loss: %f] [discri_x loss: %f] [classifier loss: %f]"
                 % (epoch, opt.n_epochs, i, len(all_dataloader),  decoder_loss.item(), discriminator_x_loss.item(), classifier_loss.item())
-            )
+
             
             batches_done = epoch * len(all_dataloader) + i
 
