@@ -16,5 +16,6 @@ class Opt():
     rho_ALM = 1.5
     decay_lr = 0.75
     lambda_mse = 1e-3
+    LAMBDA=10
     # def __init__(self):
     #     print("opt setted")
