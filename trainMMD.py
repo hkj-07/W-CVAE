@@ -82,7 +82,7 @@ classifier.apply(weights_init_normal)
 matplotlib.use('Agg')
 
 # 设置生成图像输出文件夹
-os.makedirs("./images", exist_ok=True)
+os.makedirs("./imagesMMD", exist_ok=True)
 # 设置loss曲线图输出文件夹
 # os.makedirs("./lossfigures", exist_ok=True)
 # 设置数据集文件夹
