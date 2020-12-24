@@ -73,6 +73,9 @@ if cuda:
 
 one= torch.tensor(1, dtype=torch.float)
 mone = one * -1
+if torch.cuda.is_available():
+    one = one.cuda()
+    mone = mone.cuda()
 
 # 权重初始化
 encoder.apply(weights_init_normal)
@@ -285,8 +288,8 @@ if __name__ == '__main__':
             z = torch.add(torch.mul(z, z_var), z_mean)
             generated_imgs = decoder(z.detach(), labels)
             validity_generated_imgs = discriminator_x(generated_imgs)
-            #将数据集中数据送鉴别器x中
-            d_real = discriminator_x(encoder(Variable(imgs.data)))
+            #将z_normal送鉴别器z中
+            d_real = discriminator_z(z_normal)
             decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             d_loss = opt.LAMBDA* (torch.log(d_real)).mean()
 
