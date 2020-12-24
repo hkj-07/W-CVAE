@@ -121,12 +121,21 @@ all_dataloader = DataLoader(
     batch_size=opt.batch_size,
     shuffle=True
 )
+#引入WAE-GAN 20201224  hkj  add
+def free_params(module: nn.Module):
+    for p in module.parameters():
+        p.requires_grad = True
+
+def frozen_params(module: nn.Module):
+    for p in module.parameters():
+        p.requires_grad = False
 
 # 设置Optimizers
 optimizer_encoder = torch.optim.Adam(encoder.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
 optimizer_decoder = torch.optim.Adam(decoder.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
 optimizer_discriminator_x = torch.optim.Adam(discriminator_x.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
-optimizer_discriminator_z = torch.optim.Adam(discriminator_z.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
+# optimizer_discriminator_z = torch.optim.Adam(discriminator_z.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
+optimizer_discriminator_z = torch.optim.Adam(discriminator_z.parameters(), lr=0.5*opt.lr, betas=(opt.b1, opt.b2))
 optimizer_classifier = torch.optim.Adam(encoder.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))
 
 # 输出生成图像
@@ -172,6 +181,20 @@ if __name__ == '__main__':
     for epoch in range(opt.n_epochs):
 
         for i, (imgs, _) in enumerate(all_dataloader):
+            
+            #20201224  hkj  add
+            if torch.cuda.is_available():
+                imgs = imgs.cuda()
+            
+            #20201224  hkj  add
+            encoder.zero_grad()
+            decoder.zero_grad()
+            discriminator_x.zero_grad()
+            discriminator_z.zero_grad()
+            frozen_params(decoder)
+            frozen_params(encoder)
+            free_params(discriminator_z)
+            free_params(discriminator_x)
 
             # 得到带标签数据 转one-hot
             labeled_dataloader_iter = iter(labeled_dataloader)
@@ -185,9 +208,13 @@ if __name__ == '__main__':
             imgs = Variable(imgs.type(FloatTensor))
             target = Variable(target.type(LongTensor))
 
+
+
+
             z_mean, z_var = encoder(labeled_imgs, labels)
             z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
             z = torch.add(torch.mul(z, z_var), z_mean)
+            
             
             """
             训练discriminator for z
