@@ -242,8 +242,8 @@ if __name__ == '__main__':
             #d_fake
             validity_z_normal = discriminator_z(z_normal)
             #WAE
-            torch.log(validity_z_normal).mean().backward(mone)
-            torch.log(1 - validity_z).mean().backward(mone)
+            torch.log(validity_z_normal).mean().backward()
+            torch.log(1 - validity_z).mean().backward()
             #WCAE
             # discriminator_z_loss = -torch.mean(validity_z_normal) + torch.mean(validity_z)
             # discriminator_z_loss.backward()
@@ -290,8 +290,8 @@ if __name__ == '__main__':
             decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             d_loss = opt.LAMBDA* (torch.log(d_real)).mean()
 
-            decoder_loss.backward(mone)
-            d_loss.backward(mone)
+            decoder_loss.backward()
+            d_loss.backward()
             #WAE
             # z_real = encoder(images)
             # x_recon = decoder(z_real)
