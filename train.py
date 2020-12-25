@@ -104,7 +104,7 @@ MNIST = datasets.MNIST(
             transforms.Normalize([0.5], [0.5])]
         )
     )
-# 分割数据集
+# 分割数据集  按顺序取label！
 labels = [MNIST[i][1] for i in range(len(MNIST))]
 labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=100)
 labeled_indices, target_batch = list(labeledset_spliter.split(MNIST, labels))[0]
@@ -144,8 +144,10 @@ optimizer_classifier = torch.optim.Adam(encoder.parameters(), lr=opt.lr, betas=(
 # 输出生成图像
 def sample_image(batches_done):
     # Sample noise
-    z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
+    # z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
+    
     # Get labels ranging from 0 to n_classes for n rows
+    encoder()
     generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
     generated_labels = F.one_hot(generated_labels)
     generated_labels = Variable(generated_labels.type(FloatTensor))
@@ -212,15 +214,15 @@ if __name__ == '__main__':
             target = Variable(target.type(LongTensor))
 
 
-            z_mean, z_var = encoder(labeled_imgs, labels)
+            z = encoder(labeled_imgs, labels)
             # we need true variance not log
-            z_var = torch.exp(z_var * 0.5)
-            # sample from gaussian
-            z_from_normal = Variable(torch.randn(len(imgs), opt.z_size).cuda(), requires_grad=True)
-            # z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            # z = torch.add(torch.mul(z, z_var), z_mean)
-            # shift and scale using mean and variances
-            z = z_from_normal * z_var + z_mean
+            # z_var = torch.exp(z_var * 0.5)
+            # # sample from gaussian
+            # z_from_normal = Variable(torch.randn(len(imgs), opt.z_size).cuda(), requires_grad=True)
+            # # z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+            # # z = torch.add(torch.mul(z, z_var), z_mean)
+            # # shift and scale using mean and variances
+            # z = z_from_normal * z_var + z_mean
 
             """
             训练discriminator for z
@@ -228,7 +230,11 @@ if __name__ == '__main__':
             optimizer_discriminator_z.zero_grad()
             
             validity_z = discriminator_z(z)
+
+            # z_normal = Variable(FloatTensor(torch.randn(imgs.size()[0], opt.z_size) * opt.sigma))
+
             z_normal = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+
             validity_z_normal = discriminator_z(z_normal)
             discriminator_z_loss = -torch.mean(validity_z_normal) + torch.mean(validity_z)
             discriminator_z_loss.backward()
@@ -265,15 +271,15 @@ if __name__ == '__main__':
             """
             optimizer_encoder.zero_grad()
             
-            z_mean, z_var = encoder(labeled_imgs, labels)
+            z = encoder(labeled_imgs, labels)
             # we need true variance not log
-            z_var = torch.exp(z_var * 0.5)
-            # sample from gaussian
-            z_from_normal = Variable(torch.randn(len(imgs), opt.z_size).cuda(), requires_grad=True)
-            # z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            # z = torch.add(torch.mul(z, z_var), z_mean)
-            # shift and scale using mean and variances
-            z = z_from_normal * z_var + z_mean
+            # z_var = torch.exp(z_var * 0.5)
+            # # sample from gaussian
+            # z_from_normal = Variable(torch.randn(len(imgs), opt.z_size).cuda(), requires_grad=True)
+            # # z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+            # # z = torch.add(torch.mul(z, z_var), z_mean)
+            # # shift and scale using mean and variances
+            # z = z_from_normal * z_var + z_mean
             validity_z = discriminator_z(z)
             generated_imgs = decoder(z, labels)
             encoder_loss = -torch.mean(validity_z) + F.mse_loss(generated_imgs, labeled_imgs)

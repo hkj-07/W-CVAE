@@ -6,7 +6,7 @@ from Opt import Opt
 """
 编码器
 输入：带标签数据X
-输出：Z分布的均值和方差
+输出：Z
 """
 
 class Encoder(nn.Module):
@@ -32,7 +32,7 @@ class Encoder(nn.Module):
         )
 
         self.fc_mean = spectral_norm(nn.Linear(16*16*512, self.opt.z_size))
-        self.fc_var = spectral_norm(nn.Linear(16*16*512, self.opt.z_size))
+        # self.fc_var = spectral_norm(nn.Linear(16*16*512, self.opt.z_size))
 
     def forward(self, img, label):
         # embedded_label = self.embed_label(label)
@@ -43,6 +43,6 @@ class Encoder(nn.Module):
         conv_output = self.model(img)
         # 将其打平
         conv_output = conv_output.view(conv_output.shape[0], -1)
-        z_mean = self.fc_mean(conv_output)
-        z_var = self.fc_var(conv_output)
-        return z_mean, z_var
+        z = self.fc_mean(conv_output)
+        # z_var = self.fc_var(conv_output)
+        return z
