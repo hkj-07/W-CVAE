@@ -28,8 +28,8 @@ from Opt import Opt
 from Encoder import Encoder
 from Decoder import Decoder
 from Discriminator_X import Discriminator_X
-# from Discriminator_Z import Discriminator_Z
-from Discriminator_Z_test import Discriminator_Z
+from Discriminator_Z import Discriminator_Z
+# from Discriminator_Z_test import Discriminator_Z
 from Classifier import Classifier
 
 # 定义初始化权重的函数
@@ -299,8 +299,8 @@ if __name__ == '__main__':
             # decoder_loss.backward()
             d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
 
-            decoder_loss.backward(one)
-            d_loss.backward(mone)
+            decoder_loss.backward()
+            d_loss.backward()
             
             optimizer_encoder.step()
             optimizer_decoder.step()
