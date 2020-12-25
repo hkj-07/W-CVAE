@@ -218,7 +218,7 @@ if __name__ == '__main__':
             # sample from gaussian
             z_from_normal = Variable(torch.randn(len(imgs), opt.z_size).cuda(), requires_grad=True)
             # z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
+            # z = torch.add(torch.mul(z, z_var), z_mean)
             # shift and scale using mean and variances
             z = z_from_normal * z_var + z_mean
 
