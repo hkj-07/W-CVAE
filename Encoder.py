@@ -14,7 +14,7 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.opt = Opt()
         
-        self.embed_label = spectral_norm(nn.Linear(self.opt.n_classes, self.opt.img_size*self.opt.img_size))
+        # self.embed_label = spectral_norm(nn.Linear(self.opt.n_classes, self.opt.img_size*self.opt.img_size))
 
         def conv_block(in_channels, out_channels, bn=True):
             layers = [spectral_norm(nn.Conv2d(in_channels, out_channels, 4, stride=1))]
@@ -25,7 +25,7 @@ class Encoder(nn.Module):
             return layers
 
         self.model = nn.Sequential(
-            *conv_block(self.opt.img_channels+1, 64),
+            *conv_block(self.opt.img_channels, 64),
             *conv_block(64, 128),
             *conv_block(128, 256),
             *conv_block(256, 512)
@@ -35,12 +35,12 @@ class Encoder(nn.Module):
         self.fc_var = spectral_norm(nn.Linear(16*16*512, self.opt.z_size))
 
     def forward(self, img, label):
-        embedded_label = self.embed_label(label)
-        embedded_label = embedded_label.view(-1, self.opt.img_size, self.opt.img_size).unsqueeze(1)
+        # embedded_label = self.embed_label(label)
+        # embedded_label = embedded_label.view(-1, self.opt.img_size, self.opt.img_size).unsqueeze(1)
         # 使得图片和标签在一起构成一个img_channels+1通道的图片
-        conv_input = torch.cat([img, embedded_label], dim=1)
+        # conv_input = torch.cat([img, embedded_label], dim=1)
         # 得到一个16X16X256的张量
-        conv_output = self.model(conv_input)
+        conv_output = self.model(img)
         # 将其打平
         conv_output = conv_output.view(conv_output.shape[0], -1)
         z_mean = self.fc_mean(conv_output)
