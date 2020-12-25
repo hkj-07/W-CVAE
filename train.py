@@ -147,7 +147,7 @@ def sample_image(batches_done):
     # z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
     
     # Get labels ranging from 0 to n_classes for n rows
-    encoder()
+    # encoder()
     generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
     generated_labels = F.one_hot(generated_labels)
     generated_labels = Variable(generated_labels.type(FloatTensor))
