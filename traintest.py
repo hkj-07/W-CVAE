@@ -355,7 +355,7 @@ if __name__ == '__main__':
             imgs = Variable(imgs.type(FloatTensor))
             target = Variable(target.type(LongTensor))
             if batches_done % opt.sample_interval == 0:
-                sample_image(batches_done=batches_done,labels,test_labeled_imgs)
+                sample_image(batches_done=batches_done,labels=labels,test_labeled_imgs=test_labeled_imgs)
                 # draw_loss(lossMat, batches_done)
         
         # generate_imgs_L = generator(z, generate_labels.detach())
