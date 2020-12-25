@@ -28,8 +28,8 @@ from Opt import Opt
 from Encoder import Encoder
 from Decoder import Decoder
 from Discriminator_X import Discriminator_X
-# from Discriminator_Z import Discriminator_Z
-from Discriminator_Z_test import Discriminator_Z
+from Discriminator_Z import Discriminator_Z
+# from Discriminator_Z_test import Discriminator_Z
 from Classifier import Classifier
 
 # 定义初始化权重的函数
@@ -296,10 +296,11 @@ if __name__ == '__main__':
             # validity_generated_imgs = discriminator_x(generated_imgs)
             # decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             
-            d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
+            # d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
 
-            decoder_loss.backward(one)
-            d_loss.backward(mone)
+            # decoder_loss.backward(one)
+            decoder_loss.backward()
+            # d_loss.backward(mone)
             
             optimizer_encoder.step()
             optimizer_decoder.step()
