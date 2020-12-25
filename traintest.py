@@ -290,7 +290,7 @@ if __name__ == '__main__':
             optimizer_decoder.zero_grad()
             
             z = encoder(labeled_imgs, labels)
-            d_real = discriminator_z(encoder(Variable(imgs.data)))
+            # d_real = discriminator_z(encoder(Variable(imgs.data)))
             generated_imgs = decoder(z, labels)
             decoder_loss=F.mse_loss(generated_imgs, labeled_imgs)
             # validity_generated_imgs = discriminator_x(generated_imgs)
