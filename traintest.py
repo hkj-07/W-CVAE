@@ -297,10 +297,10 @@ if __name__ == '__main__':
             # decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             
             # decoder_loss.backward()
-            d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
+            # d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
 
             decoder_loss.backward()
-            d_loss.backward()
+            # d_loss.backward()
             
             optimizer_encoder.step()
             optimizer_decoder.step()
