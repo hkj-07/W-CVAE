@@ -69,6 +69,9 @@ if cuda:
     classifier.cuda()
     cross_entropy.cuda()
 
+one= torch.tensor(1, dtype=torch.float)
+mone = one * -1
+
 # 权重初始化
 encoder.apply(weights_init_normal)
 decoder.apply(weights_init_normal)
@@ -187,10 +190,10 @@ if __name__ == '__main__':
                 imgs = imgs.cuda()
             
             #20201224  hkj  add
-            encoder.zero_grad()
-            decoder.zero_grad()
-            discriminator_x.zero_grad()
-            discriminator_z.zero_grad()
+            # encoder.zero_grad()
+            # decoder.zero_grad()
+            # discriminator_x.zero_grad()
+            # discriminator_z.zero_grad()
             frozen_params(decoder)
             frozen_params(encoder)
             free_params(discriminator_z)
@@ -207,8 +210,6 @@ if __name__ == '__main__':
             labeled_imgs = Variable(labeled_imgs.type(FloatTensor))
             imgs = Variable(imgs.type(FloatTensor))
             target = Variable(target.type(LongTensor))
-
-
 
 
             z_mean, z_var = encoder(labeled_imgs, labels)
