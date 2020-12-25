@@ -28,8 +28,8 @@ from Opt import Opt
 from Encoder import Encoder
 from Decoder import Decoder
 from Discriminator_X import Discriminator_X
-from Discriminator_Z import Discriminator_Z
-# from Discriminator_Z_test import Discriminator_Z
+# from Discriminator_Z import Discriminator_Z
+from Discriminator_Z_test import Discriminator_Z
 from Classifier import Classifier
 
 # 定义初始化权重的函数
@@ -260,9 +260,9 @@ if __name__ == '__main__':
             
             validity_z = discriminator_z(z)
 
-            z_normal = Variable(FloatTensor(torch.randn(imgs.size()[0], opt.z_size) * opt.sigma))
+            # z_normal = Variable(FloatTensor(torch.randn(imgs.size()[0], opt.z_size) * opt.sigma))
 
-            # z_normal = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+            z_normal = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
 
             validity_z_normal = discriminator_z(z_normal)
             discriminator_z_loss = -torch.mean(validity_z_normal) + torch.mean(validity_z)
@@ -290,17 +290,16 @@ if __name__ == '__main__':
             optimizer_decoder.zero_grad()
             
             z = encoder(labeled_imgs, labels)
-            # d_real = discriminator_z(encoder(Variable(imgs.data)))
+            d_real = discriminator_z(encoder(Variable(imgs.data)))
             generated_imgs = decoder(z, labels)
             decoder_loss=F.mse_loss(generated_imgs, labeled_imgs)
             # validity_generated_imgs = discriminator_x(generated_imgs)
             # decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             
-            # decoder_loss.backward()
-            # d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
+            d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
 
-            decoder_loss.backward()
-            # d_loss.backward()
+            decoder_loss.backward(one)
+            d_loss.backward(mone)
             
             optimizer_encoder.step()
             optimizer_decoder.step()
