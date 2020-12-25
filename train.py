@@ -266,8 +266,14 @@ if __name__ == '__main__':
             optimizer_encoder.zero_grad()
             
             z_mean, z_var = encoder(labeled_imgs, labels)
-            z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
-            z = torch.add(torch.mul(z, z_var), z_mean)
+            # we need true variance not log
+            z_var = torch.exp(z_var * 0.5)
+            # sample from gaussian
+            z_from_normal = Variable(torch.randn(len(imgs), opt.z_size).cuda(), requires_grad=True)
+            # z = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
+            # z = torch.add(torch.mul(z, z_var), z_mean)
+            # shift and scale using mean and variances
+            z = z_from_normal * z_var + z_mean
             validity_z = discriminator_z(z)
             generated_imgs = decoder(z, labels)
             encoder_loss = -torch.mean(validity_z) + F.mse_loss(generated_imgs, labeled_imgs)
