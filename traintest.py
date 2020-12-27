@@ -194,10 +194,10 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     # generated_imgs = decoder(z, labels)
     generated_imgs = decoder(z, generated_labels)
     # optimizer_classifier.zero_grad()
-    predicts = classifier(generated_imgs.detach())
+    # predicts = classifier(generated_imgs.detach())
 
     # 保存图片
-    running_correct += torch.sum(predicts == test_labeled_imgs.data)
+    # running_correct += torch.sum(predicts == test_labeled_imgs.data)
     save_image(generated_imgs.data, "./imagestest/%d.png" % batches_done, nrow=10, normalize=True)
 
 # 绘制loss曲线
@@ -337,12 +337,12 @@ if __name__ == '__main__':
             classifier_loss.backward()
 
             optimizer_classifier.step()
-            running_correct += torch.sum(predicts == target.data)
+            # running_correct += torch.sum(predicts == target.data)
 
             # 控制台输出loss
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][running_correct:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), discriminator_z_loss.item(), classifier_loss.item(),100*running_correct/len(all_dataloader))
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f]"
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), discriminator_z_loss.item(), classifier_loss.item())
             )
             
             batches_done = epoch * len(all_dataloader) + i
