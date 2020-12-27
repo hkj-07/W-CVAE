@@ -192,7 +192,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     # generated_labels = Variable(generated_labels.type(FloatTensor))
     generated_imgs = decoder(z, labels)
     # 保存图片
-    save_image(generated_imgs.data, "./images/%d.png" % batches_done, nrow=10, normalize=True)
+    save_image(generated_imgs.data, "./imagestest/%d.png" % batches_done, nrow=10, normalize=True)
 
 # 绘制loss曲线
 # def draw_loss(lossMat, batches_done):
