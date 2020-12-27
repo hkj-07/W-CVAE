@@ -129,15 +129,15 @@ labeled_indices, target_batch = list(labeledset_spliter.split(testMNIST, labels)
 labeled_testMNIST = Subset(testMNIST, labeled_indices)
 
 #排序
-def sort_by_target(mnist):
-    reorder_train=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[:10000])]))[:,1]
-    reorder_test=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[10000:])]))[:,1]
-    mnist.data[:10000]=mnist.data[reorder_train]
-    mnist.target[:10000]=mnist.target[reorder_train]
-    mnist.data[10000:]=mnist.data[reorder_test+10000]
-    mnist.target[10000:]=mnist.target[reorder_test+10000]
-labeled_testMNIST.target = labeled_testMNIST.target.astype(np.int8)
-sort_by_target(labeled_testMNIST)
+# def sort_by_target(mnist):
+#     reorder_train=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[:10000])]))[:,1]
+#     reorder_test=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[10000:])]))[:,1]
+#     mnist.data[:10000]=mnist.data[reorder_train]
+#     mnist.target[:10000]=mnist.target[reorder_train]
+#     mnist.data[10000:]=mnist.data[reorder_test+10000]
+#     mnist.target[10000:]=mnist.target[reorder_test+10000]
+# labeled_testMNIST.target = labeled_testMNIST.target.astype(np.int8)
+# sort_by_target(labeled_testMNIST)
 # 设置dataloader
 labeled_dataloader = DataLoader(
     labeled_MNIST,
