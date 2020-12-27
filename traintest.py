@@ -116,16 +116,6 @@ testMNIST = datasets.MNIST(
             transforms.Normalize([0.5], [0.5])]
         )
 )
-#排序
-def sort_by_target(mnist):
-    reorder_train=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[:10000])]))[:,1]
-    reorder_test=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[10000:])]))[:,1]
-    mnist.data[:10000]=mnist.data[reorder_train]
-    mnist.target[:10000]=mnist.target[reorder_train]
-    mnist.data[10000:]=mnist.data[reorder_test+10000]
-    mnist.target[10000:]=mnist.target[reorder_test+10000]
-testMNIST.target = testMNIST.target.astype(np.int8)
-sort_by_target(testMNIST)
 
 # 分割数据集  
 labels = [MNIST[i][1] for i in range(len(MNIST))]
@@ -137,6 +127,17 @@ labels = [testMNIST[i][1] for i in range(len(testMNIST))]
 labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=100)
 labeled_indices, target_batch = list(labeledset_spliter.split(testMNIST, labels))[0]
 labeled_testMNIST = Subset(testMNIST, labeled_indices)
+
+#排序
+def sort_by_target(mnist):
+    reorder_train=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[:10000])]))[:,1]
+    reorder_test=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[10000:])]))[:,1]
+    mnist.data[:10000]=mnist.data[reorder_train]
+    mnist.target[:10000]=mnist.target[reorder_train]
+    mnist.data[10000:]=mnist.data[reorder_test+10000]
+    mnist.target[10000:]=mnist.target[reorder_test+10000]
+labeled_testMNIST.target = labeled_testMNIST.target.astype(np.int8)
+sort_by_target(labeled_testMNIST)
 # 设置dataloader
 labeled_dataloader = DataLoader(
     labeled_MNIST,
@@ -185,13 +186,17 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     # Get labels ranging from 0 to n_classes for n rows
     # 得到带标签数据 转one-hot
     
-    
+    running_correct=0
     z = encoder(test_labeled_imgs,labels).cuda()
     # generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
     # generated_labels = F.one_hot(generated_labels)
     # generated_labels = Variable(generated_labels.type(FloatTensor))
     generated_imgs = decoder(z, labels)
+    # optimizer_classifier.zero_grad()
+    predicts = classifier(generated_imgs.detach())
+
     # 保存图片
+    running_correct += torch.sum(predicts == test_labeled_imgs.data)
     save_image(generated_imgs.data, "./imagestest/%d.png" % batches_done, nrow=10, normalize=True)
 
 # 绘制loss曲线
@@ -322,6 +327,7 @@ if __name__ == '__main__':
             """
             训练classifier
             """
+            running_correct=0
             optimizer_classifier.zero_grad()
 
             generated_imgs = decoder(z.detach(), labels)
@@ -330,11 +336,12 @@ if __name__ == '__main__':
             classifier_loss.backward()
 
             optimizer_classifier.step()
+            running_correct += torch.sum(predicts == target.data)
 
             # 控制台输出loss
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), discriminator_z_loss.item(), classifier_loss.item())
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][running_correct:%f]"
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), discriminator_z_loss.item(), classifier_loss.item(),100*running_correct/len(all_dataloader))
             )
             
             batches_done = epoch * len(all_dataloader) + i
@@ -346,14 +353,14 @@ if __name__ == '__main__':
             # lossMat[4].append(discriminator_x_loss.item())
             # lossMat[5].append(classifier_loss.item())
             labeled_dataloader_iter = iter(test_dataloader)
-            test_labeled_imgs, labels= next(labeled_dataloader_iter)
-            target = labels
-            labels = F.one_hot(labels)
+            test_labeled_imgs, testlabels= next(labeled_dataloader_iter)
+            target = testlabels
+            labels = F.one_hot(testlabels)
 
             # 将这些数据转换为Variable用于求导
-            labels = Variable(labels.type(FloatTensor))
+            labels = Variable(testlabels.type(FloatTensor))
             test_labeled_imgs = Variable(test_labeled_imgs.type(FloatTensor))
-            imgs = Variable(imgs.type(FloatTensor))
+            test_labeled_imgs = Variable(test_labeled_imgs.type(FloatTensor))
             target = Variable(target.type(LongTensor))
             if batches_done % opt.sample_interval == 0:
                 sample_image(batches_done=batches_done,labels=labels,test_labeled_imgs=test_labeled_imgs)
