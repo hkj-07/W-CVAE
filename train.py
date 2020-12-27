@@ -144,7 +144,7 @@ optimizer_classifier = torch.optim.Adam(encoder.parameters(), lr=opt.lr, betas=(
 # 输出生成图像
 def sample_image(batches_done):
     # Sample noise
-    # z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
+    z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
     
     # Get labels ranging from 0 to n_classes for n rows
     # encoder()
