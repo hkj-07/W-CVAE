@@ -181,17 +181,18 @@ optimizer_classifier = torch.optim.Adam(encoder.parameters(), lr=opt.lr, betas=(
 # 输出生成图像
 def sample_image(batches_done,labels,test_labeled_imgs):
     # Sample noise
-    # z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
+    z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
     
     # Get labels ranging from 0 to n_classes for n rows
     # 得到带标签数据 转one-hot
     
     running_correct=0
     z = encoder(test_labeled_imgs,labels).cuda()
-    # generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
-    # generated_labels = F.one_hot(generated_labels)
-    # generated_labels = Variable(generated_labels.type(FloatTensor))
-    generated_imgs = decoder(z, labels)
+    generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
+    generated_labels = F.one_hot(generated_labels)
+    generated_labels = Variable(generated_labels.type(FloatTensor))
+    # generated_imgs = decoder(z, labels)
+    generated_imgs = decoder(z, generated_labels)
     # optimizer_classifier.zero_grad()
     predicts = classifier(generated_imgs.detach())
 
