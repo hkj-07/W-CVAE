@@ -85,7 +85,7 @@ classifier.apply(weights_init_normal)
 matplotlib.use('Agg')
 
 # 设置生成图像输出文件夹
-os.makedirs("./images", exist_ok=True)
+os.makedirs("./imagestest", exist_ok=True)
 # 设置loss曲线图输出文件夹
 # os.makedirs("./lossfigures", exist_ok=True)
 # 设置数据集文件夹
@@ -124,9 +124,10 @@ def sort_by_target(mnist):
     mnist.target[:10000]=mnist.target[reorder_train]
     mnist.data[10000:]=mnist.data[reorder_test+10000]
     mnist.target[10000:]=mnist.target[reorder_test+10000]
+testMNIST.target = testMNIST.target.astype(np.int8)
+sort_by_target(testMNIST)
 
-
-# 分割数据集  按顺序取label！
+# 分割数据集  
 labels = [MNIST[i][1] for i in range(len(MNIST))]
 labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=100)
 labeled_indices, target_batch = list(labeledset_spliter.split(MNIST, labels))[0]
@@ -290,8 +291,8 @@ if __name__ == '__main__':
             optimizer_decoder.zero_grad()
             
             z = encoder(labeled_imgs, labels)
-            d_real = discriminator_z(encoder(Variable(imgs.data),labels))
-            generated_imgs = decoder(z, labels)
+            # d_real = discriminator_z(encoder(Variable(imgs.data),labels))
+            generated_imgs = decoder(z.detach(), labels)
             decoder_loss=F.mse_loss(generated_imgs, labeled_imgs)
             # validity_generated_imgs = discriminator_x(generated_imgs)
             # decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
