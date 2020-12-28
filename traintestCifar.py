@@ -25,7 +25,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 # 导入需要的网络和参数模块
-from Opt import Opt
+from OptCifar import Opt
 from Encoder import Encoder
 from Decoder import Decoder
 from Discriminator_X import Discriminator_X
@@ -257,7 +257,7 @@ if __name__ == '__main__':
             if torch.cuda.is_available():
                 imgs = imgs.cuda()
             #重新设置图片通道为3
-            opt.img_channels=3
+            
             x, labels = iter(all_dataloader).next()
             # 得到带标签数据 转one-hot
             # labeled_dataloader_iter = iter(labeled_dataloader)
