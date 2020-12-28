@@ -85,7 +85,7 @@ classifier.apply(weights_init_normal)
 matplotlib.use('Agg')
 
 # 设置生成图像输出文件夹
-os.makedirs("./imagestest", exist_ok=True)
+os.makedirs("./imagestestD", exist_ok=True)
 # 设置loss曲线图输出文件夹
 # os.makedirs("./lossfigures", exist_ok=True)
 # 设置数据集文件夹
@@ -100,7 +100,7 @@ lossMat = [ [] for i in range(6) ]
 # 加载数据集
 MNIST = datasets.MNIST(
         "./data/mnist",
-        train=True,
+        train=True, 
         download=True,
         transform=transforms.Compose(
             [transforms.ToTensor(), 
@@ -129,15 +129,15 @@ labeled_indices, target_batch = list(labeledset_spliter.split(testMNIST, labels)
 labeled_testMNIST = Subset(testMNIST, labeled_indices)
 
 #排序
-# def sort_by_target(mnist):
-#     reorder_train=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[:10000])]))[:,1]
-#     reorder_test=np.array(sorted([(target,i) for i, target in enumerate(mnist.target[10000:])]))[:,1]
+# def sort_by_label(mnist):
+#     reorder_train=np.array(sorted([(label,i) for i, label in enumerate(mnist.label[:10000])]))[:,1]
+#     reorder_test=np.array(sorted([(label,i) for i, label in enumerate(mnist.label[10000:])]))[:,1]
 #     mnist.data[:10000]=mnist.data[reorder_train]
-#     mnist.target[:10000]=mnist.target[reorder_train]
+#     mnist.label[:10000]=mnist.label[reorder_train]
 #     mnist.data[10000:]=mnist.data[reorder_test+10000]
-#     mnist.target[10000:]=mnist.target[reorder_test+10000]
-# labeled_testMNIST.target = labeled_testMNIST.target.astype(np.int8)
-# sort_by_target(labeled_testMNIST)
+#     mnist.label[10000:]=mnist.target[reorder_test+10000]
+# labeled_testMNIST.label = labeled_testMNIST.label.astype(np.int8)
+# sort_by_label(labeled_testMNIST)
 # 设置dataloader
 labeled_dataloader = DataLoader(
     labeled_MNIST,
@@ -198,7 +198,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
 
     # 保存图片
     # running_correct += torch.sum(predicts == test_labeled_imgs.data)
-    save_image(generated_imgs.data, "./imagestest/%d.png" % batches_done, nrow=10, normalize=True)
+    save_image(generated_imgs.data, "./imagestestD/%d.png" % batches_done, nrow=10, normalize=True)
 
 # 绘制loss曲线
 # def draw_loss(lossMat, batches_done):
@@ -278,17 +278,17 @@ if __name__ == '__main__':
             optimizer_discriminator_z.step()
 
             """
-            训练discriminator for x 先不和D对抗
+            训练discriminator for x 
             """
-            # optimizer_discriminator_x.zero_grad()
+            optimizer_discriminator_x.zero_grad()
 
-            # generated_imgs = decoder(z.detach(), labels)
-            # validity_generated_imgs = discriminator_x(generated_imgs)
-            # validity_imgs = discriminator_x(imgs)
-            # discriminator_x_loss = -torch.mean(validity_imgs) + torch.mean(validity_generated_imgs)
-            # discriminator_x_loss.backward()
+            generated_imgs = decoder(z.detach(), labels)
+            validity_generated_imgs = discriminator_x(generated_imgs)
+            validity_imgs = discriminator_x(imgs)
+            discriminator_x_loss = -torch.mean(validity_imgs) + torch.mean(validity_generated_imgs)
+            discriminator_x_loss.backward()
 
-            # optimizer_discriminator_x.step()
+            optimizer_discriminator_x.step()
             
             """
             训练decoder和encoder
