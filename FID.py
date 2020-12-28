@@ -8,7 +8,7 @@ from scipy.stats import entropy
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import os
-import dataloader_own
+from torchvision.datasets import dataloader_own
 from scipy import linalg
 
 # from inception import InceptionV3
