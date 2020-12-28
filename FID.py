@@ -97,9 +97,9 @@ def compute_FID(img1, img2, batch_size=1):
 
 
 # main function to compuate FID
-data_root = os.path.join('/PATH/TO/YOUR/IMAGE1')
+data_root = os.path.join('/WCVAE/imagestest')
 my_dataset_fakeB = dataloader_own.image_loader(data_root, batch_size=64, img_size=299, resize=True, rotation=False, normalize=[mean_inception, std_inception])
-data_root = os.path.join('/PATH/TO/YOUR/IMAGE2')
+data_root = os.path.join('/WCVAE/data/mnist')
 my_dataset_realB = dataloader_own.image_loader(data_root, batch_size=64, img_size=299, resize=True, rotation=False, normalize=[mean_inception, std_inception])
 
 FID = compute_FID(my_dataset_fakeB, my_dataset_realB)
