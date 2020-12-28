@@ -119,12 +119,12 @@ testMNIST = datasets.MNIST(
 
 # 分割数据集  
 labels = [MNIST[i][1] for i in range(len(MNIST))]
-labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=50)
+labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=200)
 labeled_indices, target_batch = list(labeledset_spliter.split(MNIST, labels))[0]
 labeled_MNIST = Subset(MNIST, labeled_indices)
 #分割test数据集
 labels = [testMNIST[i][1] for i in range(len(testMNIST))]
-labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=50)
+labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=200)
 labeled_indices, target_batch = list(labeledset_spliter.split(testMNIST, labels))[0]
 labeled_testMNIST = Subset(testMNIST, labeled_indices)
 
