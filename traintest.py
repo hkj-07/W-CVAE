@@ -186,7 +186,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     # Get labels ranging from 0 to n_classes for n rows
     # 得到带标签数据 转one-hot
     
-    running_correct=0
+    # running_correct=0
     z = encoder(test_labeled_imgs,labels).cuda()
     generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
     generated_labels = F.one_hot(generated_labels)
@@ -265,15 +265,18 @@ if __name__ == '__main__':
             """
             optimizer_discriminator_z.zero_grad()
             
-            validity_z = discriminator_z(z)
+            validity_z = discriminator_z(z)#真实生成的
 
             # z_normal = Variable(FloatTensor(torch.randn(imgs.size()[0], opt.z_size) * opt.sigma))
 
             z_normal = Variable(FloatTensor(np.random.normal(0, 1, (opt.batch_size, opt.z_size))))
 
             validity_z_normal = discriminator_z(z_normal)
-            discriminator_z_loss = -torch.mean(validity_z_normal) + torch.mean(validity_z)
-            discriminator_z_loss.backward()
+            # discriminator_z_loss = -torch.mean(validity_z_normal) + torch.mean(validity_z)
+
+            torch.log(validity_z_normal).mean().backward()
+            torch.log(1 - validity_z).mean().backward()
+            # discriminator_z_loss.backward()
 
             optimizer_discriminator_z.step()
 
@@ -297,17 +300,17 @@ if __name__ == '__main__':
             optimizer_decoder.zero_grad()
             
             z = encoder(labeled_imgs, labels)
-            # d_real = discriminator_z(encoder(Variable(imgs.data),labels))
+            d_real = discriminator_z(encoder(Variable(imgs.data),labels))
             generated_imgs = decoder(z.detach(), labels)
             decoder_loss=F.mse_loss(generated_imgs, labeled_imgs)
             # validity_generated_imgs = discriminator_x(generated_imgs)
             # decoder_loss = F.mse_loss(generated_imgs, labeled_imgs) - torch.mean(validity_generated_imgs)
             
-            # d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
+            d_loss = opt.LAMBDA * (torch.log(d_real)).mean()
 
             # decoder_loss.backward(one)
             decoder_loss.backward()
-            # d_loss.backward(mone)
+            d_loss.backward()
             
             optimizer_encoder.step()
             optimizer_decoder.step()
@@ -342,7 +345,7 @@ if __name__ == '__main__':
             # 控制台输出loss
             print(
                 "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), discriminator_z_loss.item(), classifier_loss.item(),discriminator_x_loss.item())
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item())
             )
             
             batches_done = epoch * len(all_dataloader) + i
