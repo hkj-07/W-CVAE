@@ -342,7 +342,7 @@ if __name__ == '__main__':
 
             optimizer_classifier.step()
             total += target.size(0)
-            for pre, tar in (predicts1, target.data):
+            for (pre, tar) in (predicts1, target.data):
                 if pre == tar:
                     running_correct=running_correct+1
             
