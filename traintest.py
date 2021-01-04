@@ -343,9 +343,9 @@ if __name__ == '__main__':
             optimizer_classifier.step()
             total += target.size(0)
             # compares= torch.stack([predicts1,target],axis = 1)
-            predicts1=predicts1.view(-1,opt.img_size, opt.img_size).unsqueeze(1)
+            predicts=predicts.view(-1,opt.img_size, opt.img_size).unsqueeze(1)
             target = target.view(-1,opt.img_size, opt.img_size).unsqueeze(1)
-            conv_input = torch.cat([predicts1, target], dim=1)
+            conv_input = torch.cat([predicts, target], dim=1)
             for pre in conv_input:
                 if pre[0] == pre[1]:
                     running_correct=running_correct+1
