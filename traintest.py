@@ -342,7 +342,7 @@ if __name__ == '__main__':
 
             optimizer_classifier.step()
             total += target.size(0)
-            running_correct += torch.sum(predicts == target.data)
+            running_correct += torch.sum(predicts1 == target.data)
 
             # 控制台输出loss
             print(
