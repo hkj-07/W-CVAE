@@ -344,7 +344,7 @@ if __name__ == '__main__':
             total += target.size(0)
             # compares= torch.stack([predicts1,target],axis = 1)
             target1 = Variable(target.type(FloatTensor))
-            predicts=predicts.view(-1).unsqueeze(1)
+            predicts=predicts.view(100,1).unsqueeze(1)
             target1 = target1.unsqueeze(1)
             print(target1)
             print(predicts.shape)
