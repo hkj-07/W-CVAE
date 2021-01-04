@@ -336,7 +336,7 @@ if __name__ == '__main__':
             optimizer_classifier.zero_grad()
             generated_imgs = decoder(z.detach(), labels)
             predicts = classifier(generated_imgs.detach())
-            # predicts1=torch.max(predicts.data, 1)
+            predicts=torch.max(predicts.data, 1)
             classifier_loss = cross_entropy(predicts, target)
             classifier_loss.backward()
 
