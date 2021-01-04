@@ -342,8 +342,9 @@ if __name__ == '__main__':
 
             optimizer_classifier.step()
             total += target.size(0)
-            for (pre, tar) in (predicts1, target.data):
-                if pre == tar:
+            compares= torch.stack([predicts1,target],axis = 1)
+            for pre in compares:
+                if pre[0] == pre[1]:
                     running_correct=running_correct+1
             
             # running_correct += torch.sum(predicts1 == target.data)
