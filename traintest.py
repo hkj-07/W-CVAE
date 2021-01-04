@@ -200,26 +200,26 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     # running_correct += torch.sum(predicts == test_labeled_imgs.data)
     save_image(generated_imgs.data, "./imagestestD/%d.png" % batches_done, nrow=10, normalize=True)
 
-# 绘制loss曲线
-# def draw_loss(lossMat, batches_done):
-#     """Draw the loss line"""
-#     fig = plt.figure()
-#     loss_fig = fig.add_subplot(1,1,1)
-#     # G
-#     loss_fig.plot(lossMat[0], lossMat[1], 'r-', label='G loss', lw=0.5)
-#     # D
-#     loss_fig.plot(lossMat[0], lossMat[2], 'y-', label='D loss', lw=0.5)
-#     # C1
-#     loss_fig.plot(lossMat[0], lossMat[3], 'b-', label='C1 loss', lw=0.5)
+绘制loss曲线
+def draw_loss(lossMat, batches_done):
+    """Draw the loss line"""
+    fig = plt.figure()
+    loss_fig = fig.add_subplot(1,1,1)
+    # G
+    loss_fig.plot(lossMat[0], lossMat[2], 'r-', label='G(decoder) loss', lw=0.5)
+    # D
+    loss_fig.plot(lossMat[0], lossMat[4], 'y-', label='D_x loss', lw=0.5)
+    # C1
+    # loss_fig.plot(lossMat[0], lossMat[3], 'b-', label='C1 loss', lw=0.5)
 
-#     loss_fig.set_xlabel("Batches Done")
-#     loss_fig.set_ylabel("Loss Value")
-#     loss_fig.legend(loc='best')
+    loss_fig.set_xlabel("Batches Done")
+    loss_fig.set_ylabel("Loss Value")
+    loss_fig.legend(loc='best')
 
-#     plt.draw()
+    plt.draw()
 
-#     name = "lossfigures/Loss " + str(batches_done) + ".png"
-#     plt.savefig(name, dpi=300, bbox_inches='tight')
+    name = "lossfigures/Loss " + str(batches_done) + ".png"
+    plt.savefig(name, dpi=300, bbox_inches='tight')
 
 
 """
@@ -352,11 +352,11 @@ if __name__ == '__main__':
             
             batches_done = epoch * len(all_dataloader) + i
 
-            # lossMat[0].append(batches_done)
-            # lossMat[1].append(encoder_loss.item())
-            # lossMat[2].append(decoder_loss.item())
-            # lossMat[3].append(discriminator_z_loss.item())
-            # lossMat[4].append(discriminator_x_loss.item())
+            lossMat[0].append(batches_done)
+            lossMat[1].append(encoder_loss.item())
+            lossMat[2].append(decoder_loss.item())
+            lossMat[3].append(discriminator_z_loss.item())
+            lossMat[4].append(discriminator_x_loss.item())
             # lossMat[5].append(classifier_loss.item())
             labeled_dataloader_iter = iter(test_dataloader)
             test_labeled_imgs, testlabels= next(labeled_dataloader_iter)
@@ -370,7 +370,7 @@ if __name__ == '__main__':
             target = Variable(target.type(LongTensor))
             if batches_done % opt.sample_interval == 0:
                 sample_image(batches_done=batches_done,labels=labels,test_labeled_imgs=test_labeled_imgs)
-                # draw_loss(lossMat, batches_done)
+                draw_loss(lossMat, batches_done)
         
         # generate_imgs_L = generator(z, generate_labels.detach())
         # fake_validity_L = discriminator(generate_imgs_L)
