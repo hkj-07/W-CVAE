@@ -336,7 +336,7 @@ if __name__ == '__main__':
             optimizer_classifier.zero_grad()
             generated_imgs = decoder(z.detach(), labels)
             predicts = classifier(generated_imgs.detach())
-            # predicts1=torch.max(predicts.data, 1)
+            predicts1=torch.max(predicts.data, 1)
             classifier_loss = cross_entropy(predicts, target)
             classifier_loss.backward()
 
@@ -344,11 +344,11 @@ if __name__ == '__main__':
             total += target.size(0)
             # compares= torch.stack([predicts1,target],axis = 1)
             target1 = Variable(target.type(FloatTensor))
-            predicts=predicts.unsqueeze(1)
-            # target1 = target1.unsqueeze(1)
+            predicts1=predicts1.unsqueeze(1)
+            target1 = target1.unsqueeze(1)
             print(target1)
-            print(predicts)
-            conv_input = torch.cat([predicts, target1], dim=1)
+            print(predicts1)
+            conv_input = torch.cat([predicts1, target1], dim=1)
             
             for pre in conv_input:
                 if pre[0] == pre[1]:
