@@ -345,7 +345,9 @@ if __name__ == '__main__':
             # compares= torch.stack([predicts1,target],axis = 1)
             target1 = Variable(target.type(FloatTensor))
             predicts=predicts.unsqueeze(1)
-            target1 = target1.unsqueeze(1)
+            # target1 = target1.unsqueeze(1)
+            print(target1)
+            print(predicts)
             conv_input = torch.cat([predicts, target1], dim=1)
             
             for pre in conv_input:
