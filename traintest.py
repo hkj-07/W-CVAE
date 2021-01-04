@@ -332,20 +332,22 @@ if __name__ == '__main__':
             训练classifier
             """
             running_correct=0
+            total = 0
             optimizer_classifier.zero_grad()
-
             generated_imgs = decoder(z.detach(), labels)
             predicts = classifier(generated_imgs.detach())
+            predicts1=torch.max(predicts.data, 1)
             classifier_loss = cross_entropy(predicts, target)
             classifier_loss.backward()
 
             optimizer_classifier.step()
-            # running_correct += torch.sum(predicts == target.data)
+            total += target.size(0)
+            running_correct += torch.sum(predicts == target.data)
 
             # 控制台输出loss
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item())
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][Accuracy:%f]"
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(100*correct/total))
             )
             
             batches_done = epoch * len(all_dataloader) + i
