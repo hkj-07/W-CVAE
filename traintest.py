@@ -343,9 +343,11 @@ if __name__ == '__main__':
             optimizer_classifier.step()
             total += target.size(0)
             # compares= torch.stack([predicts1,target],axis = 1)
+            target1 = Variable(target.type(FloatTensor))
             predicts=predicts.unsqueeze(1)
-            target = target.unsqueeze(1)
-            conv_input = torch.cat([predicts, target], dim=1)
+            target1 = target1.unsqueeze(1)
+            conv_input = torch.cat([predicts, target1], dim=1)
+            
             for pre in conv_input:
                 if pre[0] == pre[1]:
                     running_correct=running_correct+1
