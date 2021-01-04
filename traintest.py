@@ -342,12 +342,13 @@ if __name__ == '__main__':
 
             optimizer_classifier.step()
             total += target.size(0)
-            running_correct += torch.sum(predicts1 == target.data)
+            # running_correct += torch.sum(predicts1 == target.data)
+            running_correct += (predicts1 == target).sum()
 
             # 控制台输出loss
             print(
                 "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][Accuracy:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(100*correct/total))
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(100*running_correct/total))
             )
             
             batches_done = epoch * len(all_dataloader) + i
