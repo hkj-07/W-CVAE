@@ -343,8 +343,9 @@ if __name__ == '__main__':
 
             optimizer_classifier.step()
             total += target.size(0)
-            target1 = Variable(target.type(FloatTensor))
-            predicts1 = predicts1.type(torch.FloatTensor)
+            # target1 = Variable(target.type(FloatTensor))
+            target1 = target.type(FloatTensor)
+            predicts1 = predicts1.type(FloatTensor)
             # print(target1)
             # print(predicts1)
             # conv_input = torch.cat([predicts1, target1], dim=1)
