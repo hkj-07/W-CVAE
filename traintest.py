@@ -341,7 +341,7 @@ if __name__ == '__main__':
             classifier_loss = cross_entropy(predicts, target)
             classifier_loss.backward()
 
-            optimizer_classifier.step()
+            
             total += target.size(0)
             # target1 = Variable(target.type(FloatTensor))
             target1 = target.type(FloatTensor)
@@ -358,10 +358,10 @@ if __name__ == '__main__':
             
             # running_correct += torch.sum(predicts1 == target.data)
             # running_correct += (predicts1 == target).sum()
-
+            optimizer_classifier.step()
             # 控制台输出loss
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][Accuracy:%f]"
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][Accuracy:%.2f]"
                 % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(correct/100))
             )
             
