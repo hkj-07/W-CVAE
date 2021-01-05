@@ -346,12 +346,12 @@ if __name__ == '__main__':
             # target1 = Variable(target.type(FloatTensor))
             target1 = target.type(FloatTensor)
             predicts1 = predicts1.type(FloatTensor)
-            print(target1)
-            print(predicts1)
+            # print(target1)
+            # print(predicts1)
             # conv_input = torch.cat([predicts1, target1], dim=1)
             correct_list = torch.eq(target1, predicts1)
             correct_list = correct_list.type(LongTensor)
-            print(correct_list)
+            # print(correct_list)
             correct = correct_list.sum()
             # for pre in conv_input:
             #     if pre[0] == pre[1]:
