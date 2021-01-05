@@ -87,7 +87,7 @@ matplotlib.use('Agg')
 # 设置生成图像输出文件夹
 os.makedirs("./imagestestD", exist_ok=True)
 # 设置loss曲线图输出文件夹
-os.makedirs("./lossfigures", exist_ok=True)
+os.makedirs("./lossfiguresD", exist_ok=True)
 # 设置数据集文件夹
 os.makedirs("./data/mnist", exist_ok=True)
 
@@ -119,12 +119,12 @@ testMNIST = datasets.MNIST(
 
 # 分割数据集  
 labels = [MNIST[i][1] for i in range(len(MNIST))]
-labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=200)
+labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=100)
 labeled_indices, target_batch = list(labeledset_spliter.split(MNIST, labels))[0]
 labeled_MNIST = Subset(MNIST, labeled_indices)
 #分割test数据集
 labels = [testMNIST[i][1] for i in range(len(testMNIST))]
-labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=200)
+labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=100)
 labeled_indices, target_batch = list(labeledset_spliter.split(testMNIST, labels))[0]
 labeled_testMNIST = Subset(testMNIST, labeled_indices)
 
@@ -218,7 +218,7 @@ def draw_loss(lossMat, batches_done):
 
     plt.draw()
 
-    name = "lossfigures/Loss " + str(batches_done) + ".png"
+    name = "lossfiguresD/Loss " + str(batches_done) + ".png"
     plt.savefig(name, dpi=300, bbox_inches='tight')
 
 
@@ -343,17 +343,17 @@ if __name__ == '__main__':
 
             optimizer_classifier.step()
             total += target.size(0)
-            # compares= torch.stack([predicts1,target],axis = 1)
             target1 = Variable(target.type(FloatTensor))
-            # predicts1=predicts1.view(100,1).unsqueeze(1)
-            target1 = target1.unsqueeze(1)
-            print(target1)
-            print(predicts1)
-            conv_input = torch.cat([predicts1, target1], dim=1)
-            
-            for pre in conv_input:
-                if pre[0] == pre[1]:
-                    running_correct=running_correct+1
+            predicts1 = predicts1.type(torch.FloatTensor)
+            # print(target1)
+            # print(predicts1)
+            # conv_input = torch.cat([predicts1, target1], dim=1)
+            correct_list = torch.eq(target1, predicts1)
+            correct_list = correct_list.type(LongTensor)
+            correct = correct_list.sum()
+            # for pre in conv_input:
+            #     if pre[0] == pre[1]:
+            #         running_correct=running_correct+1
             
             # running_correct += torch.sum(predicts1 == target.data)
             # running_correct += (predicts1 == target).sum()
@@ -361,7 +361,7 @@ if __name__ == '__main__':
             # 控制台输出loss
             print(
                 "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][Accuracy:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(100*running_correct/total))
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(correct/100))
             )
             
             batches_done = epoch * len(all_dataloader) + i
