@@ -87,7 +87,7 @@ matplotlib.use('Agg')
 # 设置生成图像输出文件夹
 os.makedirs("./imagestestD", exist_ok=True)
 # 设置loss曲线图输出文件夹
-# os.makedirs("./lossfigures", exist_ok=True)
+os.makedirs("./lossfigures", exist_ok=True)
 # 设置数据集文件夹
 os.makedirs("./data/mnist", exist_ok=True)
 
@@ -192,7 +192,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     generated_labels = F.one_hot(generated_labels)
     generated_labels = Variable(generated_labels.type(FloatTensor))
     # generated_imgs = decoder(z, labels)
-    generated_imgs = decoder(z, generated_labels)
+    generated_imgs = decoder(z, generated_labels).cuda()
     # optimizer_classifier.zero_grad()
     # predicts = classifier(generated_imgs.detach())
 
@@ -336,7 +336,8 @@ if __name__ == '__main__':
             optimizer_classifier.zero_grad()
             generated_imgs = decoder(z.detach(), labels)
             predicts = classifier(generated_imgs.detach())
-            predicts1=torch.max(predicts.data, 1)
+            # predicts1=torch.max(predicts.data, 1)
+            predicts1=predicts.argmax(dim=1)
             classifier_loss = cross_entropy(predicts, target)
             classifier_loss.backward()
 
@@ -344,8 +345,8 @@ if __name__ == '__main__':
             total += target.size(0)
             # compares= torch.stack([predicts1,target],axis = 1)
             target1 = Variable(target.type(FloatTensor))
-            # predicts1=predicts1.view(100,1).unsqueeze(1)
-            # target1 = target1.unsqueeze(1)
+            predicts1=predicts1.view(100,1).unsqueeze(1)
+            target1 = target1.unsqueeze(1)
             print(target1)
             print(predicts)
             conv_input = torch.cat([predicts1, target1], dim=1)
