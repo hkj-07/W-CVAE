@@ -85,9 +85,9 @@ classifier.apply(weights_init_normal)
 matplotlib.use('Agg')
 
 # 设置生成图像输出文件夹
-os.makedirs("./imagestestD", exist_ok=True)
+os.makedirs("./imagestest20", exist_ok=True)
 # 设置loss曲线图输出文件夹
-os.makedirs("./lossfiguresD", exist_ok=True)
+os.makedirs("./lossfigures20", exist_ok=True)
 # 设置数据集文件夹
 os.makedirs("./data/mnist", exist_ok=True)
 
@@ -119,7 +119,7 @@ testMNIST = datasets.MNIST(
 
 # 分割数据集  
 labels = [MNIST[i][1] for i in range(len(MNIST))]
-labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=100)
+labeledset_spliter = StratifiedShuffleSplit(n_splits=1, train_size=20)
 labeled_indices, target_batch = list(labeledset_spliter.split(MNIST, labels))[0]
 labeled_MNIST = Subset(MNIST, labeled_indices)
 #分割test数据集
@@ -198,7 +198,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
 
     # 保存图片
     # running_correct += torch.sum(predicts == test_labeled_imgs.data)
-    save_image(generated_imgs.data, "./imagestestD/%d.png" % batches_done, nrow=10, normalize=True)
+    save_image(generated_imgs.data, "./imagestest20/%d.png" % batches_done, nrow=10, normalize=True)
 
 #绘制loss曲线
 def draw_loss(lossMat, batches_done):
@@ -218,7 +218,7 @@ def draw_loss(lossMat, batches_done):
 
     plt.draw()
 
-    name = "lossfiguresD/Loss " + str(batches_done) + ".png"
+    name = "lossfigures20/Loss " + str(batches_done) + ".png"
     plt.savefig(name, dpi=300, bbox_inches='tight')
 
 
@@ -362,8 +362,8 @@ if __name__ == '__main__':
             optimizer_classifier.step()
             # 控制台输出loss
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][Accuracy:%.2f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),(correct/100))
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f]"
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item())
             )
             
             batches_done = epoch * len(all_dataloader) + i
