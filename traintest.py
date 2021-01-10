@@ -181,7 +181,7 @@ optimizer_classifier = torch.optim.Adam(encoder.parameters(), lr=opt.lr, betas=(
 # 输出生成图像
 def sample_image(batches_done,labels,test_labeled_imgs):
     # Sample noise
-    z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
+    # z = Variable(FloatTensor(np.random.normal(0, 1, (10*10, opt.z_size))))
     
     # Get labels ranging from 0 to n_classes for n rows
     # 得到带标签数据 转one-hot
@@ -362,8 +362,8 @@ if __name__ == '__main__':
             optimizer_classifier.step()
             # 控制台输出loss
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item())
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][correct:%f]"
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),correct)
             )
             
             batches_done = epoch * len(all_dataloader) + i
