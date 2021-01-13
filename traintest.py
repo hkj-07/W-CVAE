@@ -188,7 +188,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
     
     # running_correct=0
     z = encoder(test_labeled_imgs,labels).cuda()
-    generated_labels = LongTensor(np.array([num for _ in range(10) for num in range(10)]))
+    generated_labels = LongTensor(np.array([num for num in range(10) for _ in range(10)]))
     generated_labels = F.one_hot(generated_labels)
     generated_labels = Variable(generated_labels.type(FloatTensor))
     # generated_imgs = decoder(z, labels)
