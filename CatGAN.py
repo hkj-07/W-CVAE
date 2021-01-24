@@ -348,7 +348,7 @@ img_transform = transforms.Compose([
 ])
 
 print('Loading MNIST Dataset...')
-dataset = MNIST('./data/mnist', transform=img_transform,train=True)# download=True)
+dataset = MNIST('/data/mnist', transform=img_transform,train=True)# download=True)
 mnist_dataset=MNIST_Dataset(dataset)
 
 #train_size = int(0.8 * len(dataset))
@@ -440,7 +440,7 @@ for epoch in range(EPOCH):
     val_marginal_entropies_fake.append(val_marginal_entropies_fake_tmp)
 
     ax=pd.DataFrame(np.array([[np.mean(x) for x in batches_losses_D], [np.mean(x) for x in batches_losses_G]]).T,
-                   columns=['Discriminator_train', 'Generator_train').plot(title="CatGAN loss")
+                   columns=['Discriminator_train', 'Generator_train']).plot(title="CatGAN loss")
     fig = ax.get_figure()
     name = "lossfigures/CatGANloss " + str(epoch) + ".png"
     fig.savefig(name, dpi=300, bbox_inches='tight')
