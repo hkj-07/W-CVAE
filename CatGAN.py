@@ -348,7 +348,7 @@ img_transform = transforms.Compose([
 ])
 
 print('Loading MNIST Dataset...')
-dataset = MNIST('/data/mnist', transform=img_transform,train=True)# download=True)
+dataset = MNIST('./data/mnist', transform=img_transform,train=True)# download=True)
 mnist_dataset=MNIST_Dataset(dataset)
 
 #train_size = int(0.8 * len(dataset))
