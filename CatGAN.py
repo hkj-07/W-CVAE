@@ -167,7 +167,7 @@ def train_loop_fun1(data_loader, discriminator, generator, optimizer_G, optimize
 
         loss_G = conditional_entropy_fake-marginal_entropy_fake
 
-        loss_G.backward(retain_graph=True)
+        loss_G.backward()
         optimizer_G.step()
         
         losses_G.append(loss_G.item())
