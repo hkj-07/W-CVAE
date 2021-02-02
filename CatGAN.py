@@ -412,7 +412,7 @@ val_marginal_entropies_fake=[]
 for epoch in range(EPOCH):
     t0 = time.time()    
     print(f"\n=============== EPOCH {epoch+1} / {EPOCH} ===============\n")
-    batches_losses_tmp_G, batches_losses_tmp_D, conditional_entropies_real_tmp, marginal_entropies_real_tmp, cross_entropies_tmp, conditional_entropies_fake_tmp, marginal_entropies_fake_tmp=train_loop_fun1(train_data_loader, discriminator, generator, optimizer_G, optimizer_D, latent_size, TRAIN_BATCH_SIZE, device, λ)
+    batches_losses_tmp_G, batches_losses_tmp_D, conditional_entropies_real_tmp, marginal_entropies_real_tmp, cross_entropies_tmp, conditional_entropies_fake_tmp, marginal_entropies_fake_tmp=train_loop_fun1(train_data_loader.detach(), discriminator.detach(), generator.detach(), optimizer_G.detach(), optimizer_D.detach(), latent_size, TRAIN_BATCH_SIZE, device, λ)
     epoch_loss_D=np.mean(batches_losses_tmp_D)
     epoch_loss_G=np.mean(batches_losses_tmp_G)
     print(f"\n*** avg_Generator_loss : {epoch_loss_G:.2f}, avg_Discriminator_loss : {epoch_loss_D:.2f}, time : ~{(time.time()-t0)//60} min ({time.time()-t0:.2f} sec) ***\n")
