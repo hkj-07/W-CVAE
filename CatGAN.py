@@ -145,7 +145,7 @@ def train_loop_fun1(data_loader, discriminator, generator, optimizer_G, optimize
         
         #uniform distribution sampling
         z = torch.randn(batch_size, latent_size, 1, 1).to(device=device)
-        fake_images = generator(z.detach())
+        fake_images = generator(z)
         y_fake = discriminator(fake_images)
 
         conditional_entropy_fake = conditional_entropy(y_fake, batch_size)#maximize uncertainty
