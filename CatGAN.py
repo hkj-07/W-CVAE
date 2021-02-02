@@ -329,7 +329,7 @@ def cross_entropy_fun(targets, predicted):
     return loss(predicted, targets)
     
 TRAIN_BATCH_SIZE=100
-EPOCH=600
+EPOCH=35
 validation_split = .2
 shuffle_dataset = True
 random_seed= 42
