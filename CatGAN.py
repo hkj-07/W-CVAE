@@ -169,7 +169,6 @@ def train_loop_fun1(data_loader, discriminator, generator, optimizer_G, optimize
 
         loss_G.backward()
         optimizer_G.step()
-        
         losses_G.append(loss_G.item())
         losses_D.append(loss_D.item())
         
@@ -328,6 +327,7 @@ def conditional_entropy(y, batch_size):
 def cross_entropy_fun(targets, predicted):
     loss = nn.CrossEntropyLoss()
     return loss(predicted, targets)
+    
 TRAIN_BATCH_SIZE=100
 EPOCH=600
 validation_split = .2
@@ -413,8 +413,8 @@ for epoch in range(EPOCH):
     t0 = time.time()    
     print(f"\n=============== EPOCH {epoch+1} / {EPOCH} ===============\n")
     batches_losses_tmp_G, batches_losses_tmp_D, conditional_entropies_real_tmp, marginal_entropies_real_tmp, cross_entropies_tmp, conditional_entropies_fake_tmp, marginal_entropies_fake_tmp=train_loop_fun1(train_data_loader, discriminator, generator, optimizer_G, optimizer_D, latent_size, TRAIN_BATCH_SIZE, device, λ)
-    epoch_loss_D=np.mean(batches_losses_tmp_D)
-    epoch_loss_G=np.mean(batches_losses_tmp_G)
+    epoch_loss_D=np.mean(batches_losses_tmp_D.detach())
+    epoch_loss_G=np.mean(batches_losses_tmp_G.detach())
     print(f"\n*** avg_Generator_loss : {epoch_loss_G:.2f}, avg_Discriminator_loss : {epoch_loss_D:.2f}, time : ~{(time.time()-t0)//60} min ({time.time()-t0:.2f} sec) ***\n")
     t1=time.time()
     output, target, val_losses_tmp_D, val_losses_tmp_G, val_conditional_entropies_real_tmp, val_marginal_entropies_real_tmp, val_cross_entropies_tmp, val_conditional_entropies_fake_tmp, val_marginal_entropies_fake_tmp=eval_loop_fun1(valid_data_loader, discriminator, generator, latent_size, TRAIN_BATCH_SIZE, device, λ)
