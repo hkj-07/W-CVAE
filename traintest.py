@@ -85,9 +85,9 @@ classifier.apply(weights_init_normal)
 matplotlib.use('Agg')
 
 # 设置生成图像输出文件夹
-os.makedirs("./imagestest20", exist_ok=True)
+os.makedirs("./imagestest100", exist_ok=True)
 # 设置loss曲线图输出文件夹
-os.makedirs("./lossfigures20", exist_ok=True)
+os.makedirs("./lossfigures100", exist_ok=True)
 # 设置数据集文件夹
 os.makedirs("./data/mnist", exist_ok=True)
 
@@ -212,13 +212,13 @@ def draw_loss(lossMat, batches_done):
     # C1
     # loss_fig.plot(lossMat[0], lossMat[3], 'b-', label='C1 loss', lw=0.5)
 
-    loss_fig.set_xlabel("Batches Done")
+    loss_fig.set_xlabel("Epoch")
     loss_fig.set_ylabel("Loss Value")
     loss_fig.legend(loc='best')
 
     plt.draw()
 
-    name = "lossfigures20/Loss " + str(batches_done) + ".png"
+    name = "lossfigures100/Loss " + str(batches_done) + ".png"
     plt.savefig(name, dpi=300, bbox_inches='tight')
 
 
@@ -368,7 +368,7 @@ if __name__ == '__main__':
             
             batches_done = epoch * len(all_dataloader) + i
 
-            lossMat[0].append(batches_done)
+            lossMat[0].append(epoch)
             # lossMat[1].append(encoder_loss.item())
             lossMat[1].append(decoder_loss.item())
             # lossMat[3].append(discriminator_z_loss.item())
@@ -384,9 +384,10 @@ if __name__ == '__main__':
             test_labeled_imgs = Variable(test_labeled_imgs.type(FloatTensor))
             test_labeled_imgs = Variable(test_labeled_imgs.type(FloatTensor))
             target = Variable(target.type(LongTensor))
-            if batches_done % opt.sample_interval == 0:
-                sample_image(batches_done=batches_done,labels=labels,test_labeled_imgs=test_labeled_imgs)
-                draw_loss(lossMat, batches_done)
+            # if batches_done % opt.sample_interval == 0:
+            if epoch!=0:
+                sample_image(batches_done=epoch,labels=labels,test_labeled_imgs=test_labeled_imgs)
+                draw_loss(lossMat, epoch)
         
         # generate_imgs_L = generator(z, generate_labels.detach())
         # fake_validity_L = discriminator(generate_imgs_L)
