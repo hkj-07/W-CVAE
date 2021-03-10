@@ -361,9 +361,13 @@ if __name__ == '__main__':
             # running_correct += (predicts1 == target).sum()
             optimizer_classifier.step()
             # 控制台输出loss
+            # print(
+            #     "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][correct:%f]"
+            #     % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),correct)
+            # )
             print(
-                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][discriminator_x_loss:%f][correct:%f]"
-                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),discriminator_x_loss.item(),correct)
+                "[Epoch %d/%d] [Batch %d/%d]  [decoder loss: %f] [discri_z loss: %f]  [classifier loss: %f][correct:%f]"
+                % (epoch, opt.n_epochs, i, len(all_dataloader), decoder_loss.item(), d_loss.item(), classifier_loss.item(),correct)
             )
             
             batches_done = epoch * len(all_dataloader) + i
@@ -372,7 +376,7 @@ if __name__ == '__main__':
             # lossMat[1].append(encoder_loss.item())
             lossMat[1].append(decoder_loss.item())
             # lossMat[3].append(discriminator_z_loss.item())
-            lossMat[2].append(discriminator_x_loss.item())
+            # lossMat[2].append(discriminator_x_loss.item())
             # lossMat[5].append(classifier_loss.item())
             labeled_dataloader_iter = iter(test_dataloader)
             test_labeled_imgs, testlabels= next(labeled_dataloader_iter)
