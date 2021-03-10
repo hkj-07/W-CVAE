@@ -3,7 +3,7 @@ import numpy as np
 import math
 import random
 """
-本版本为改进encoder只生成一个z，之后要讲测试集分类打包
+20210310标签样本数量改为100，同时注释鉴别器D_x代码，测试生成能力
 """
 # PyTorch package
 import torch
@@ -85,9 +85,9 @@ classifier.apply(weights_init_normal)
 matplotlib.use('Agg')
 
 # 设置生成图像输出文件夹
-os.makedirs("./imagestest100", exist_ok=True)
+os.makedirs("./imagestestNoD", exist_ok=True)
 # 设置loss曲线图输出文件夹
-os.makedirs("./lossfigures100", exist_ok=True)
+os.makedirs("./lossfiguresNoD", exist_ok=True)
 # 设置数据集文件夹
 os.makedirs("./data/mnist", exist_ok=True)
 
@@ -198,7 +198,7 @@ def sample_image(batches_done,labels,test_labeled_imgs):
 
     # 保存图片
     # running_correct += torch.sum(predicts == test_labeled_imgs.data)
-    save_image(generated_imgs.data, "./imagestest20/%d.png" % batches_done, nrow=10, normalize=True)
+    save_image(generated_imgs.data, "./imagestestNoD/%d.png" % batches_done, nrow=10, normalize=True)
 
 #绘制loss曲线
 def draw_loss(lossMat, batches_done):
@@ -212,13 +212,13 @@ def draw_loss(lossMat, batches_done):
     # C1
     # loss_fig.plot(lossMat[0], lossMat[3], 'b-', label='C1 loss', lw=0.5)
 
-    loss_fig.set_xlabel("Epoch")
-    loss_fig.set_ylabel("Loss Value")
+    # loss_fig.set_xlabel("Epoch")
+    # loss_fig.set_ylabel("Loss Value")
     loss_fig.legend(loc='best')
 
     plt.draw()
 
-    name = "lossfigures100/Loss " + str(batches_done) + ".png"
+    name = "lossfiguresNoD/Loss " + str(batches_done) + ".png"
     plt.savefig(name, dpi=300, bbox_inches='tight')
 
 
@@ -283,15 +283,15 @@ if __name__ == '__main__':
             """
             训练discriminator for x 
             """
-            optimizer_discriminator_x.zero_grad()
+            # optimizer_discriminator_x.zero_grad()
 
-            generated_imgs = decoder(z.detach(), labels)
-            validity_generated_imgs = discriminator_x(generated_imgs)
-            validity_imgs = discriminator_x(imgs)
-            discriminator_x_loss = -torch.mean(validity_imgs) + torch.mean(validity_generated_imgs)
-            discriminator_x_loss.backward()
+            # generated_imgs = decoder(z.detach(), labels)
+            # validity_generated_imgs = discriminator_x(generated_imgs)
+            # validity_imgs = discriminator_x(imgs)
+            # discriminator_x_loss = -torch.mean(validity_imgs) + torch.mean(validity_generated_imgs)
+            # discriminator_x_loss.backward()
 
-            optimizer_discriminator_x.step()
+            # optimizer_discriminator_x.step()
             
             """
             训练decoder和encoder
@@ -316,7 +316,7 @@ if __name__ == '__main__':
             optimizer_decoder.step()
             
             """
-            训练encoder
+            训练encoder 已并入decoder
             """
             # optimizer_encoder.zero_grad()
             
