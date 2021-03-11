@@ -207,13 +207,13 @@ def draw_loss(lossMat, batches_done):
     loss_fig = fig.add_subplot(1,1,1)
     # G
     loss_fig.plot(lossMat[0], lossMat[1], 'r-', label='G(decoder) loss', lw=0.5)
-    # D
-    loss_fig.plot(lossMat[0], lossMat[2], 'y-', label='D_x loss', lw=0.5)
+    # # D
+    # loss_fig.plot(lossMat[0], lossMat[2], 'y-', label='D_x loss', lw=0.5)
     # C1
     # loss_fig.plot(lossMat[0], lossMat[3], 'b-', label='C1 loss', lw=0.5)
 
-    # loss_fig.set_xlabel("Epoch")
-    # loss_fig.set_ylabel("Loss Value")
+    loss_fig.set_xlabel("Epoch")
+    loss_fig.set_ylabel("Loss Value")
     loss_fig.legend(loc='best')
 
     plt.draw()
