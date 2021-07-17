@@ -452,5 +452,5 @@ for epoch in range(EPOCH):
     print(f"\t§§ CatGAN model has been saved §§")
     torch.save(discriminator, f"mnist/CatGAN/discriminator/CatGAN_discriminator_model_epoch{epoch+1}.pt")
     torch.save(generator, f"mnist/CatGAN/generator/CatGAN_generator_model_epoch{epoch+1}.pt")
-data_write_csv(".\\parametres.csv", lossData1)
-data_write_csv(".\\parametres.csv", lossData2)
+data_write_csv(".\\lossData1.csv", lossData1)
+data_write_csv(".\\lossData2.csv", lossData2)
