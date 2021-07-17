@@ -409,6 +409,9 @@ val_marginal_entropies_real=[]
 val_cross_entropies=[]
 val_conditional_entropies_fake=[]
 val_marginal_entropies_fake=[]
+lossData1=[[]]
+lossData2=[[]]
+iter=0
 for epoch in range(EPOCH):
     t0 = time.time()    
     print(f"\n=============== EPOCH {epoch+1} / {EPOCH} ===============\n")
@@ -426,7 +429,10 @@ for epoch in range(EPOCH):
     # val_losses_G.append(val_losses_tmp_G)
     batches_losses_D.append(batches_losses_tmp_D.detach())
     batches_losses_G.append(batches_losses_tmp_G.detach())
-    
+    #draw csv
+    lossData1.append([iter,batches_losses_D.data.numpy()])
+    lossData2.append([iter,batches_losses_G.data.numpy()])
+    iter+=1
     # conditional_entropies_real.append(conditional_entropies_real_tmp)
     # marginal_entropies_real.append(marginal_entropies_real_tmp)
     # cross_entropies.append(cross_entropies_tmp)
@@ -446,3 +452,5 @@ for epoch in range(EPOCH):
     print(f"\t§§ CatGAN model has been saved §§")
     torch.save(discriminator, f"mnist/CatGAN/discriminator/CatGAN_discriminator_model_epoch{epoch+1}.pt")
     torch.save(generator, f"mnist/CatGAN/generator/CatGAN_generator_model_epoch{epoch+1}.pt")
+data_write_csv(".\\parametres.csv", lossData1)
+data_write_csv(".\\parametres.csv", lossData2)

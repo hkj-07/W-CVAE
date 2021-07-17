@@ -127,7 +127,7 @@ CIFAR10=datasets.CIFAR10(
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             ]))
 testCIFAR10=datasets.CIFAR10(
-            root="./data/train_folder", 
+            root="./data/test_folder", 
             download=True,
             train=False,
             transform=transforms.Compose([

@@ -23,33 +23,14 @@ import matplotlib
 import matplotlib.pyplot as plt
 from Encoder import Encoder
 from Decoder import Decoder
+from Utils import imq_kernel,rbf_kernel
+from Opt import Opt
 
-if __name__ == "__main__":
-    matplotlib.use('Agg')
     os.makedirs("images", exist_ok=True)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--n_epochs", type=int, default=200, help="number of epochs of training")
-    parser.add_argument("--batch_size", type=int, default=64, help="size of the batches")
-    parser.add_argument("--lr", type=float, default=3e-4, help="adam: learning rate")
-    parser.add_argument("--b1", type=float, default=0.5, help="adam: decay of first order momentum of gradient")
-    parser.add_argument("--b2", type=float, default=0.999, help="adam: decay of first order momentum of gradient")
-    parser.add_argument("--n_cpu", type=int, default=16, help="number of cpu threads to use during batch generation")
-    parser.add_argument("--latent_dim", type=int, default=100, help="dimensionality of the latent space")
-    parser.add_argument("--n_classes", type=int, default=10, help="number of classes for dataset")
-    parser.add_argument("--img_size", type=int, default=128, help="size of each image dimension")
-    parser.add_argument("--channels", type=int, default=1, help="number of image channels")
-    parser.add_argument("--sample_interval", type=int, default=500, help="interval between image sampling")
-    parser.add_argument("--lambda_ALM", type=float, default=1, help="lambda in ALM")
-    parser.add_argument("--mu_ALM", type=float, default=1.2, help="mu in ALM")
-    parser.add_argument("--rho_ALM", type=float, default=1.5, help="rho in ALM")
-    parser.add_argument("--z_size", default=128, action="store", type=int, dest="z_size")
-    parser.add_argument("--recon_level", default=3, action="store", type=int, dest="recon_level")
-    parser.add_argument("--decay_lr", default=0.75, action="store", type=float, dest="decay_lr")
-    parser.add_argument("--lambda_mse", default=1e-3, action="store", type=float, dest="lambda_mse")
 
+    opt=Opt()
 
-    opt = parser.parse_args()
     print(opt)
     z_size = opt.z_size
     recon_level = opt.recon_level
